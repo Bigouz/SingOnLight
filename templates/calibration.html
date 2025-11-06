@@ -18,9 +18,11 @@
         <div class="text">
             <p>La calibration permet de régler la sensibilité des capteurs sonores.
             </br>Il est conseillé de faire cette étape à chaque changement d'environnement sonore.
-            </p>
-            <input type="number" name="seuil" id="seuil" placeholder="Seuil de calibration (dB)" min="30" max="100" step="1" value="{{seuil}}" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>100)this.value=100;">
+            <br><br>
+            <label for="seuil">Seuil : </label>
+            <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="100" step="1" value="{{seuil}}" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>100)this.value=100;">
             <button class="calibrateBTN" onclick="calibrate()">Calibrer</button>
+            </p>
             <script>
             async function calibrate() {
                 const seuil = parseInt(document.getElementById('seuil').value);

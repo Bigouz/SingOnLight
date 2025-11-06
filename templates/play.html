@@ -18,8 +18,32 @@
         <div class="text">
             <p>Sing on Light est un mini-jeu de rythme utilisant un Raspberry PI, 2 capteurs sonnores, un écran LCD et une LED.
             </br>Le but est simple : Quand la LED s'allume, il faut faire un bruit.
+            <br><br>
+
+            <label for="dureeIntervalle">Durée d'intervalles (en secondes) : </label>
+            <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}"><br>
+
+            <label for="duree">Durée de la partie (en intervalles) : </label>
+            <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}"><br>
+            <button class="start" onclick="save_param()">Jouer</button>
             </p>
-            <button class="start">Jouer</button>
+            <script>
+            async function save_param() {
+                const dureeIntervalle = parseInt(document.getElementById('dureeIntervalle').value);
+                const dureePartie = parseInt(document.getElementById('dureePartie').value);
+
+                
+                // Send parameters via POST with JSON body
+                const response = await fetch('/run_play', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie})
+                });
+
+                const data = await response.json();
+                document.getElementById('result').innerText = data.message;
+            }
+        </script>
         </div>
     </div>
 </div>

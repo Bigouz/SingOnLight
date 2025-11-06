@@ -13,12 +13,15 @@ async def lifespan(app : FastAPI):
     # Code à exécuter au démarrage de l'application
     # Initialisation de la base de données SQLite
     connect = sqlite3.connect('singonlight.db')
-    connect.execute('CREATE TABLE IF NOT EXISTS calibration (id INTEGER PRIMARY KEY AUTOINCREMENT, seuil INTEGER)') # utilisé afin d'obtenir le seuil de calibration
+    connect.execute('CREATE TABLE IF NOT EXISTS parametres (cle TEXT PRIMARY KEY,valeur INTEGER)') # utilisé afin d'obtenir le seuil de calibration
     connect.execute('CREATE TABLE IF NOT EXISTS scores (id INTEGER, score INTEGER, maxScore INTEGER)') # utilisé afin d'obtenir les scores des parties jouées
-    everything = connect.execute('SELECT * FROM calibration')
+    everything = connect.execute('SELECT * FROM parametres')
     data = everything.fetchall()
-    if len(data) == 0:
-        connect.execute('INSERT INTO calibration (id,seuil) VALUES (?,?)', (1,50)) # valeur par défaut du seuil de calibration
+    print(len(data))
+    if len(data) < 3:
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("seuil",50)) # valeur par défaut du seuil de calibration
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("dureeIntervalle", 25)) # durée d'une intervalle
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("dureePartie", 25)) # durée de la partie en intervalles
     connect.commit()
     connect.close()
     print("Base de données initialisée.")
@@ -38,7 +41,12 @@ def main(request:Request):
 
 @app.get("/play.html")
 def play(request:Request) -> str:
-    return templates.TemplateResponse('play.html',{'request': request})
+    connect = sqlite3.connect("singonlight.db")
+    dureeIntervalle = connect.execute('SELECT valeur FROM parametres WHERE cle="dureeIntervalle"').fetchone()[0]
+    dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie"').fetchone()[0]
+    connect.close()
+
+    return templates.TemplateResponse('play.html',{'request': request,'dureeIntervalle':dureeIntervalle, "dureePartie":dureePartie})
 
 @app.get("/data.html")
 def data(request:Request) -> str:
@@ -47,13 +55,13 @@ def data(request:Request) -> str:
 @app.get("/calibration.html")
 def calibration(request:Request) -> str:
     connect = sqlite3.connect('singonlight.db')
-    seuil = connect.execute('SELECT seuil FROM calibration').fetchone()[0]
+    seuil = connect.execute('SELECT valeur FROM parametres WHERE cle="seuil"').fetchone()[0]
     connect.close()
     return templates.TemplateResponse('calibration.html',{'request': request, 'seuil':int(seuil)})
 
 def save_calibration(seuil: int):
     connect = sqlite3.connect('singonlight.db')
-    connect.execute('UPDATE calibration set seuil=(?) WHERE id=1', (seuil,))
+    connect.execute('UPDATE parametres set valeur=(?) WHERE cle="seuil"', (seuil,))
     connect.commit()
     connect.close()
 
@@ -63,6 +71,22 @@ async def run_calibrate(request:Request):
     body = await request.json()
     seuil = body.get("seuil", 50)
     result = save_calibration(int(seuil))
+    return result
+
+def save_param_jouer(dureeIntervalle:int, dureePartie:int):
+    connect = sqlite3.connect('singonlight.db')
+    connect.execute('UPDATE parametres set valeur=(?) WHERE cle="dureeIntervalle"', (dureeIntervalle,))
+    connect.execute('UPDATE parametres set valeur=(?) WHERE cle="dureePartie"', (dureePartie,))
+    connect.commit()
+    connect.close()
+
+@app.post("/run_play")
+async def run_play(request:Request):
+    body = await request.json()
+    dureeIntervalle = body.get("dureeIntervalle",1)
+    dureePartie = body.get("dureePartie",25)
+    print(dureePartie)
+    result = save_param_jouer(dureeIntervalle, dureePartie)
     return result
 
 if __name__ == "__main__":
