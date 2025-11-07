@@ -19,6 +19,7 @@ grid-column-gap: 10px;
     background-color:#1e2124;
     border-radius: 10px;
     text-align: center;
+    min-height: 97vh;
 }
 
 .div1a{
@@ -30,6 +31,7 @@ a{
     text-decoration: unset;
     color: white;
 }
+
 a:hover{
     color: rgb(121, 172, 218);
 }

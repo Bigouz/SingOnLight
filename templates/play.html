@@ -10,7 +10,9 @@
             <a class="indexBTN" href="/">Menu Principal</a><br>
             <a class="playBTN" style="color: #7289da;" href="/play.html">Jouer</a><br>
             <a class="calibrationBTN" href="/calibration.html">Calibration</a><br>
-            <a class="dataBTN" href="/data.html">Données</a>
+            <a class="dataBTN" href="/data.html">Données</a><br>
+            <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" class="github">GitHub</a>
+
         </div>    
     </div>
     <div class="div2">
@@ -27,6 +29,7 @@
             <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}"><br>
             <button class="start" onclick="save_param()">Jouer</button>
             </p>
+            
             <script>
             async function save_param() {
                 const dureeIntervalle = parseInt(document.getElementById('dureeIntervalle').value);
