@@ -4,6 +4,14 @@ body{
     font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
+#currentBTN{
+    color: #92a7f4;
+    background: #282B30;
+    background: -webkit-linear-gradient(90deg, rgba(40, 43, 48, 1) 0%, rgba(40, 43, 48, 1) 52%, rgba(61, 75, 110, 1) 100%);
+    background: -moz-linear-gradient(90deg, rgba(40, 43, 48, 1) 0%, rgba(40, 43, 48, 1) 52%, rgba(61, 75, 110, 1) 100%);
+    background: linear-gradient(90deg, rgba(40, 43, 48, 1) 0%, rgba(40, 43, 48, 1) 52%, rgba(61, 75, 110, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#282B30", endColorstr="#3D4B6E", GradientType=1);
+}
 
 .parent {
 display: grid;
@@ -20,20 +28,28 @@ grid-column-gap: 10px;
     border-radius: 10px;
     text-align: center;
     min-height: 97vh;
+    box-shadow: #000000 0px 4px 12px;
 }
 
 .div1a{
-    margin-top: 2.5rem;
-    margin-bottom: 2.5rem;
+    padding-top: 0.5rem;
 }
 
-a{
+.div1a a{
     text-decoration: unset;
     color: white;
+    display: inline-block;
+    margin-top: 9px;
+    background-color: #282b30;
+    border-radius: 7.5px;
+    min-width: 97%;
+    min-height: 20px;
+    box-shadow: black 0px 2px 2px;
 }
 
 a:hover{
-    color: rgb(121, 172, 218);
+    color: rgb(198 228 255);
+    background-color: #f1f6ff1f;
 }
 
 h1{
