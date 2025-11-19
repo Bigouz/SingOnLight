@@ -18,7 +18,7 @@ class GroveSoundSensor(object):
 Grove = GroveSoundSensor
 
 def main():
-  from grove.help import SlotHelper
+  from grove.helper import SlotHelper
   sh = SlotHelper(SlotHelper.ADC)
   pin = 0
 
