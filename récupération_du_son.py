@@ -3,8 +3,16 @@
 import grovepi
 import numpy as np
 import time
-import 
+import SoundSensor.py as sound
 
+# definition du décibel minimal a dépasser
+def recuperation son (n) : 
+  n # durée en seconde définit par l'utilisateur dans les paramètre
+  l = []
+  start = time.time()
+  while time.time() - start<n:
+    l.append(sound.main())
+  return l
 
 """
 CHUNK = 1000 #Definition de la taille de l'échantillon audio
