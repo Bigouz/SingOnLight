@@ -1,11 +1,12 @@
 #Aidé en parti par l'ia
 
-import pyaudio
+import grovepi
 import numpy as np
 import time
+import 
 
-#Enregistrement de la données
 
+"""
 CHUNK = 1000 #Definition de la taille de l'échantillon audio
 FORMAT = pyaudio.paInt16
 CHANNELS = 1 # 1 pour mono et 2 pour stéréo
@@ -39,4 +40,5 @@ except KeyboardInterrupt:
   son.stop_stream()
   son.close()
   p.terminate()
+  """
 
