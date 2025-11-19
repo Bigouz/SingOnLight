@@ -22,7 +22,7 @@ async def lifespan(app : FastAPI):
     print(len(data))
     if len(data) == 0:
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("seuil",50)) # valeur par défaut du seuil de calibration
-        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("dureeIntervalle", 25)) # durée d'une intervalle
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("dureeIntervalle", 1)) # durée d'une intervalle
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?)', ("dureePartie", 25)) # durée de la partie en intervalles
 
     stats = connect.execute('SELECT * FROM scores')
