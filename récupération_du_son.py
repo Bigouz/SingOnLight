@@ -21,7 +21,7 @@ def seuil(bruit):
   phrase_calibrage = "Veuillez ne pas faire de bruit durant le calibrage du son ambiant"
   phrase_commence = "Silence"
   phrase_fin = "Calibrage du son ambiant terminé"
-  liste_Calibrage = []
+  liste_calibrage = []
   for i in range (2):
     n_ambiant = 5 # durée en seconde définit par l'utilisateur dans les paramètre
     l = []
@@ -40,6 +40,7 @@ def seuil(bruit):
     phrase_calibrage = "Veuillez faire du bruit durant le calibrage du son joueur"
     phrase_commence = "Crier !!!"
     phrase_fin = "Calibrage du son joueur terminé"
+  return liste_calibrage
   
   
   
