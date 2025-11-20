@@ -1,6 +1,7 @@
 import math
 import time
 from grove.adc import ADC
+import sqlite3
 
 __all__ = ['GroveSensorSound']
 
@@ -23,11 +24,21 @@ def main():
   pin = 0
 
   sensor = GroveSoundSensor(pin)
-
+  taux_interpolation = 0.1
+  
+  connect = sqlite3.connect("singonlight.db")
+  data = connect.execute("SELECT dureeIntervalle FROM parametres;")
+  data = data.fetchone()
+  data2= connect.execute("SELECT dureePartie FROM parametres;")
+  data2= data2.fetchone()
+  connect.close()
   print('Detecting sound...')
-  while True:
+  L=[]
+  for i in range(int(data*taux_interpolation*data2)):
       print('Sound value: {0}'.format(sensor.sound))
-      time.sleep(.3)
+      L.append(sensor.sound)
+      time.sleep(taux_interpolation)
+  return L
 
 if __name__ == '__main__':
     main()
