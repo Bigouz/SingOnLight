@@ -1,4 +1,5 @@
-import math
+### BRANCHER EN A0
+### https://wiki.seeedstudio.com/Grove-Sound_Sensor/
 import time
 from grove.adc import ADC
 import sqlite3
