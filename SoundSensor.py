@@ -3,6 +3,7 @@
 import time
 from grove.adc import ADC
 import sqlite3
+import asyncio
 
 __all__ = ['GroveSensorSound']
 
@@ -19,7 +20,8 @@ class GroveSoundSensor(object):
 
 Grove = GroveSoundSensor
 
-def main():
+async def main():
+  """ utiliser run() a la place car async"""
   from grove.helper import SlotHelper
   sh = SlotHelper(SlotHelper.ADC)
   pin = 0
@@ -38,8 +40,12 @@ def main():
   for i in range(int(data*(1/taux_interpolation)*data2)):
       print('Sound value: {0}'.format(sensor.sound))
       L.append(sensor.sound)
-      time.sleep(taux_interpolation)
+      await asyncio.sleep(taux_interpolation)
   return L
+
+def run():
+  """ a utiliser pour executer main"""
+  asyncio.run(main())
 
 if __name__ == '__main__':
     main()
