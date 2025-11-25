@@ -45,7 +45,7 @@ async def main():
 
 def run():
   """ a utiliser pour executer main"""
-  asyncio.run(main())
+  return asyncio.run(main())
 
 if __name__ == '__main__':
     main()
