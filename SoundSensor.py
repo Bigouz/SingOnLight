@@ -30,9 +30,9 @@ async def main():
   taux_interpolation = 0.1
   
   connect = sqlite3.connect("singonlight.db")
-  data = connect.execute("SELECT dureeIntervalle FROM parametres;")
+  data = connect.execute("SELECT valeur FROM parametres WHERE cle = 'dureeIntervalle';")
   data = data.fetchone()[0]
-  data2= connect.execute("SELECT dureePartie FROM parametres;")
+  data2= connect.execute("SELECT valeur FROM parametres WHERE cle = 'dureePartie';")
   data2= data2.fetchone()[0]
   connect.close()
   print('Detecting sound...')
