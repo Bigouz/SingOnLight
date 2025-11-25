@@ -2,6 +2,7 @@
 ### https://wiki.seeedstudio.com/Grove-Red_LED/
 from grove.gpio import GPIO
 import sqlite3
+import asyncio
 
 class GroveLed(GPIO):
     def __init__(self,pin):
@@ -20,7 +21,8 @@ connect = sqlite3.connect("singonlight.db")
 dureeIntervalle = connect.execute("SELECT valeur FROM parametres WHERE cle = dureeIntervalle;").fetchone()[0]
 connect.close()
 
-def main(schema_aleatoire:list[int]):
+async def main(schema_aleatoire:list[int]):
+    """utiliser LED.run() a la place car c'edt une fonction async. """
     import time
 
     led = GroveLed(pin)
@@ -30,10 +32,14 @@ def main(schema_aleatoire:list[int]):
             led.on()
         elif schema_aleatoire[i] == 0:
             led.off()
-        time.sleep(dureeIntervalle)
+        
+        await asyncio.sleep(dureeIntervalle)
     return schema_aleatoire
 
+def run():
+    """a utiliser pour executer main()"""
+    asyncio.run(main())
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())
 
