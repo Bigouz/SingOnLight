@@ -9,6 +9,8 @@ import sqlite3
 import score as score
 import time
 from random import randint
+import SoundSensor as Sound
+import LED
 
 @asynccontextmanager # gestion du cycle de vie de l'application (onstartup/shutdown)
 async def lifespan(app : FastAPI):
@@ -100,15 +102,25 @@ def save_param_jouer(dureeIntervalle:int, dureePartie:int):
 
 @app.post("/run_play")
 async def run_play(request:Request):
+    """ appelé quand le joueur appuie sur le bouton jouer """
     body = await request.json()
     dureeIntervalle = body.get("dureeIntervalle",1)
     dureePartie = body.get("dureePartie",25)
     #dureeTotale = dureeIntervalle*dureePartie
     save_param_jouer(dureeIntervalle, dureePartie)
-
-    for i in range(101):
-        enregistrer_score(i) ### A MODIFIER AVEC LE SCORE REEL OBTENU PAR LE JOUEUR
-
+    
+    rythme = generation_rythme(int(dureePartie))
+    res = Sound.run() # resultat du capteur son (liste de volumes)
+    LED.run(rythme) # allume la led selon le rythme
+    print("fin de partie")
+    ### appeler les fonctions pour transformer 
+    ### la liste en liste de 0 et 1 ici
+    
+    pourcentage = score.calculer_pourcentage(rythme, res)
+    enregistrer_score(pourcentage)
+    
+    ### afficher le pourcentage de réussite ici
+    
     """for i in range(dureeTotale):
         time.sleep(60)
         dureeTotale-=1
@@ -132,14 +144,6 @@ def generation_rythme(longueur) -> list:
     for i in range(longueur):
         signal.append(randint(0, 1))
     return signal
-
-def clignotement(signal, pause=60) -> None:
-    """ Crée (print) un clignotement en fonction d'un signal, avec une pause entre chaque séquence de 1s (60ms) par défaut."""
-    for i in range(len(signal)):
-        if signal[i]==1:
-            print("Clignotement")
-        time.sleep(pause)
-    return
 
 def transformer_signal_audio(signal_audio, seuil):
     """Transforme un signal audio en une liste binaire en fonction d'un seuil donné."""
