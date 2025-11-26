@@ -2,8 +2,8 @@
 
 ## Branchements
 
-Capteur Sonore: A0 <br>
-LED: 12
+Capteur Sonore [(wiki)](https://wiki.seeedstudio.com/Grove-Sound_Sensor/): A0 <br>
+LED [(wiki)](https://wiki.seeedstudio.com/Grove-Red_LED/): 12
 
 ## Analyse fonctionnelle
 
