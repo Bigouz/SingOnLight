@@ -1,5 +1,12 @@
 # Projet-L1-Informatique-1er-semestre
 
+## Branchements
+
+Capteur Sonore: A0 <br>
+LED: 12
+
+## Analyse fonctionnelle
+
 Introduction
 
 L’idée générale de Sing On Light est de divertir des plus jeunes aux plus vieux en créant un mini-jeu amusant et compétitif afin d’atteindre un public large et universel afin de les amuser avec un jeu de rythme, compréhensible par tous. 
