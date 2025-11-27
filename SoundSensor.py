@@ -20,8 +20,8 @@ class GroveSoundSensor(object):
 
 Grove = GroveSoundSensor
 
-async def main():
-  """ utiliser run() a la place car async"""
+async def main(start_event):
+  await start_event.wait()
   from grove.helper import SlotHelper
   sh = SlotHelper(SlotHelper.ADC)
   pin = 0
