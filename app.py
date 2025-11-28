@@ -152,7 +152,7 @@ def transformation_signal_moyenne(signal,dureeIntervalle):
     signal_compr = []
     n = int(dureeIntervalle/taux)
     for i in range(0,len(signal_bin),n):
-        signal_compr.append(sum(L[i:i+n])/n)
+        signal_compr.append(sum(signal_bin[i:i+n])/n)
     signal_fin = []
     for s in signal_compr:
         if s >= 0.5:
