@@ -131,15 +131,36 @@ async def run_play(request:Request):
     print("son (" + str(len(res))+"): " + str(res))
     print("led (" + str(len(rythme))+"): " + str(rythme))
     
-    ### appeler les fonctions pour transformer 
-    ### la liste en liste de 0 et 1 ici
-    
-    pourcentage = score.calculerPourcentage(rythme, res)
+    signal = transformation_signal_moyenne(rythme,dureeIntervalle)
+    print(res, "=>", signal)
+    pourcentage = score.calculerPourcentage(rythme, signal)
     enregistrer_score(pourcentage)
+    print(pourcentage)
     
     ### afficher le pourcentage de réussite ici
 
     return f"La partie est terminée" 
+
+def transformation_signal_moyenne(signal,dureeIntervalle):
+    connect = sqlite3.connect("singonlight.db")
+    seuil = connect.execute("SELECT valeur FROM parametres WHERE cle='seuil';").fetchone()[0]
+    print("seuil :",seuil)
+    connect.close()
+    
+    signal_bin = [1 if signal[i] >= seuil else 0 for i in range(len(signal))]
+    taux = 0.1
+    signal_compr = []
+    n = int(taux*dureeIntervalle)
+    for i in range(0,len(signal_bin),n):
+        signal_compr.append(sum(L[i:i+n])/n)
+    signal_fin = []
+    for s in signal_compr:
+        if s >= 0.5:
+            signal_fin.append(1)
+        else:
+            signal_fin.append(0)
+    return signal_fin
+        
     
 def transformation_signal(lst_partie):
     n = 3
