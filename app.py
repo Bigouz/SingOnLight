@@ -150,7 +150,7 @@ def transformation_signal_moyenne(signal,dureeIntervalle):
     signal_bin = [1 if signal[i] >= seuil else 0 for i in range(len(signal))]
     taux = 0.1
     signal_compr = []
-    n = int(taux*dureeIntervalle)
+    n = int(dureeIntervalle/taux)
     for i in range(0,len(signal_bin),n):
         signal_compr.append(sum(L[i:i+n])/n)
     signal_fin = []
