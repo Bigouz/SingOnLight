@@ -28,7 +28,7 @@
             <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="1" min="0.1" step="0.1" oninput="temps_total()"><br>
 
             <label for="dureePartie">Durée de la partie (en intervalles) : </label>
-            <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" oninput="temps_total()"><br><br>
+            <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" oninput="temps_total()" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;" ><br><br>
             <span id="temps_total"> </span><br>
             <button class="start" onclick="save_param()">Jouer</button>
             <br><br>
