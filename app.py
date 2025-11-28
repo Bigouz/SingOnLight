@@ -135,7 +135,7 @@ async def run_play(request:Request):
     print(res, "=>", signal)
     pourcentage = score.calculerPourcentage(rythme, signal)
     enregistrer_score(pourcentage)
-    print(pourcentage)
+    print(str(pourcentage) + "%")
     
     ### afficher le pourcentage de réussite ici
 
