@@ -25,10 +25,10 @@
             <br><br>
 
             <label for="dureeIntervalle">Durée d'intervalles (en secondes) : </label>
-            <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="1" min="0.1" step="0.1" oninput="temps_total()"><br>
+            <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="1" min="0.1" step="0.1" oninput="temps_total() ; change_value(this);"><br>
 
             <label for="dureePartie">Durée de la partie (en intervalles) : </label>
-            <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" oninput="temps_total()" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;" ><br><br>
+            <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" oninput="temps_total(); this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;" ><br><br>
             <span id="temps_total"> </span><br>
             <button class="start" onclick="save_param()">Jouer</button>
             <br><br>
@@ -36,6 +36,18 @@
             </p>
             
             <script>
+                function change_value(this){
+                    this.value = this.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+                    let v = parseFloat(this.value);
+                    if (isNaN(v)) v = 0.1;
+                    if (v < 0.1) v = 0.1;
+                    if (v > 2.0) v = 2.0;
+                    // arrondi au pas de 0.1
+                    v = Math.round(v * 10) / 10;
+                    this.value = v.toFixed(1);
+                }
+            
+            
                 function temps_total(){
                     let temps = Math.round(document.getElementById("dureePartie").value * document.getElementById("dureeIntervalle").value);
                     document.getElementById("temps_total").innerHTML = "Temps total de la partie : " + temps + " secondes";
