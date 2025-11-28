@@ -22,7 +22,7 @@
             </br>Il est conseillé de faire cette étape à chaque changement d'environnement sonore.
             <br><br>
             <label for="seuil">Seuil : </label>
-            <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="750" step="1" value="{{seuil}}" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>750)this.value=750;">
+            <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="750" step="1" value="{{seuil}}" oninput="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>750)this.value=750;">
             <button class="calibrateBTN" onclick="calibrate()">Calibrer</button>
             <br><br>
             <p style="color:lime;" id="result">{{message}}</p>
