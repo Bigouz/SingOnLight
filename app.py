@@ -174,9 +174,9 @@ async def run_play(request:Request):
     enregistrer_score(pourcentage)
     print(str(pourcentage) + "%")
     
-    ### afficher le pourcentage de réussite ici
-
-    return f"La partie est terminée" 
+    if pourcentage >= 50:
+        return "Vous avez gagné avec un score de " + pourcentage + "%"
+    return "Vous avez perdu avec un score de " + pourcentage + "%"
 
 def transformation_signal_moyenne(signal,dureeIntervalle):
     connect = sqlite3.connect("singonlight.db")
