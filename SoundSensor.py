@@ -4,6 +4,7 @@ from grove.adc import ADC
 import sqlite3
 import asyncio
 from ws_manager import broadcast
+import LED
 
 __all__ = ['GroveSensorSound']
 
@@ -35,10 +36,12 @@ async def main(start_event):
   connect.close()
   print('Detecting sound...')
   L=[]
-  for i in range(int(data*(1/taux_interpolation)*data2)):
-      print('Sound value: {0}'.format(sensor.sound))
-      L.append(sensor.sound)
-      await asyncio.sleep(taux_interpolation)
+  for j in range(int(data2)):
+    LED.change_state(j)
+    for i in range(int(data*(1/taux_interpolation)*data2)):
+        print('Sound value: {0}'.format(sensor.sound))
+        L.append(sensor.sound)
+        await asyncio.sleep(taux_interpolation)
   return L
 
 
