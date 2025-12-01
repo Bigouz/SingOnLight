@@ -18,6 +18,9 @@ import LED
 #import test as Sound
 
 
+condition = asyncio.Condition()
+sound_counter = 0
+
 start_event = asyncio.Event()
 
 
@@ -156,12 +159,12 @@ async def run_play(request:Request):
     global start_event
     start_event = asyncio.Event()
     sound_task = asyncio.create_task(Sound.main(start_event))
-    led_task = asyncio.create_task(LED.main(rythme, start_event))
+    #led_task = asyncio.create_task(LED.main(rythme, start_event))
     
     start_event.set()
 
     res = await sound_task
-    await led_task
+    #await led_task
 
     print(res)
     print("fin de partie")
