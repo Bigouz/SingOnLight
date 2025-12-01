@@ -21,7 +21,7 @@ class GroveSoundSensor(object):
 
 Grove = GroveSoundSensor
 
-async def main(start_event):
+async def main(start_event, rythme):
   await start_event.wait()
   pin = 0
 
@@ -37,8 +37,8 @@ async def main(start_event):
   print('Detecting sound...')
   L=[]
   for j in range(int(data2)):
-    LED.change_state(j)
-    for i in range(int(data*(1/taux_interpolation)*data2)):
+    LED.change_state(rythme,j)
+    for i in range(int(data*(1/taux_interpolation))):
         print('Sound value: {0}'.format(sensor.sound))
         L.append(sensor.sound)
         await asyncio.sleep(taux_interpolation)
