@@ -27,7 +27,7 @@
                 <br><br>
 
                 <label for="dureeIntervalle">Durée d'intervalles (en secondes) : </label>
-                <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="1" min="0.1" step="0.1" onchange="change_value(this);temps_total()"><br>
+                <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="2" min="0.1" step="0.1" onchange="change_value(this);temps_total()"><br>
 
                 <label for="dureePartie">Durée de la partie (en intervalles) : </label>
                 <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;temps_total()" ><br><br>
@@ -82,4 +82,5 @@
 <link rel="stylesheet" href="static/css/style.css">
 </body>
 </html>
+
 
