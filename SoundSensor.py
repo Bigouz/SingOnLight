@@ -42,6 +42,7 @@ async def main(start_event, rythme):
         print('Sound value: {0}'.format(sensor.sound))
         L.append(sensor.sound)
         await asyncio.sleep(taux_interpolation)
+  LED.change_state([0],0) 
   return L
 
 
