@@ -52,6 +52,18 @@ a:hover{
     background-color: #f1f6ff1f;
 }
 
+.joueur{
+   margin-top: 0px;
+    background-color: #F28600;
+    border: 0px solid;
+    border-radius: 4px;
+    min-width: 250px;
+    min-height: 55px;
+    color:white;
+    text-shadow: black 1px 1px 2px;
+    box-shadow: black 1px 2px 1px, inset 1px 1px #ffffff30;
+}
+
 h1{
     color: #7289da;
     text-align: center;
