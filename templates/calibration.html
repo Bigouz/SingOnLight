@@ -22,14 +22,14 @@
             </br>Il est conseillé de faire cette étape à chaque changement d'environnement sonore.
             <br><br>
             <div id="calibrations">
-                <div class="container" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;">
+                <div class="container2" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;">
                     <h3>Calibration manuelle</h3>
                     <label for="seuil">Seuil: </label>
                     <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="750" step="1" value="{{seuil}}" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>750)this.value=750;"><br>
                     <button class="calibrateBTN" id="cal_man_btn" onclick="calibrate()">Calibrer</button>
                     <br><br>
                 </div>
-                <div class="container" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;margin-left: 20px;">
+                <div class="container2" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;margin-left: 20px;">
                     <h3>Calibration automatique</h3>
                     <br>
                     <button class="calibrateBTN" onclick="auto_calibrate()">Calibration automatique</button>
@@ -87,3 +87,4 @@
 
 <link rel="stylesheet" href="static/css/style.css">
 </html>
+
