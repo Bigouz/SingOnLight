@@ -147,7 +147,7 @@ input[type="number"]::-webkit-outer-spin-button {
     gap: 20px;
 }
 
-.container:hover{
+.container:hover, .container2:hover{
     box-shadow: #000000 0px 4px 12px, inset 1px 1px #ffffff30;
 }
 
