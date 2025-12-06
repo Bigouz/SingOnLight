@@ -34,8 +34,8 @@
             
                 <br><br>
                 <span id="temps_total"> </span><br>
-                <button class="start" onclick="save_param()">Jouer</button>
-                <p>🔥🔥🔥 Winstreak: {{winstreak}} 🔥🔥🔥 </p>
+                <button id="start" class="start" onclick="this.disabled = true;save_param()">Jouer</button>
+                <p id = "winstreak">🔥🔥🔥 Winstreak: {{winstreak}} 🔥🔥🔥 </p>
             </div>
             
             
@@ -69,14 +69,18 @@
                 const dureePartie = parseInt(document.getElementById('dureePartie').value);
 
                 
-                // Send parameters via POST with JSON body
                 const response = await fetch('/run_play', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie})
                 });
                 const data = await response.json();
-                document.getElementById('result').innerText = data;
+                document.getElementById('result').innerText = data["message"];
+                document.getElementById('result').style.color = data["message"].includes("gagné") ? "lime" : "red";
+                document.getElementById('winstreak').innerText = "🔥🔥🔥 Winstreak: " + data["winstreak"] + " 🔥🔥🔥";
+
+
+                document.getElementById('start').disabled = false;
             }
         </script>
         </div>

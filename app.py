@@ -11,11 +11,11 @@ from random import randint
 from ws_manager import active_connections, broadcast
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED.
-import SoundSensor as Sound
-import LED
+#import SoundSensor as Sound
+#import LED
 
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-#import test as Sound
+import test as Sound
 
 start_event = asyncio.Event()
 
@@ -34,6 +34,7 @@ async def lifespan(app : FastAPI):
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("seuil",50)) # valeur par défaut du seuil de calibration
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureeIntervalle", 1)) # durée d'une intervalle
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureePartie", 25)) # durée de la partie en intervalles
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("winstreak", 0)) # winstreak initialisé à 0
 
     stats = connect.execute('SELECT * FROM scores;')
     data_scores = stats.fetchall()
@@ -67,9 +68,10 @@ def play(request:Request) -> str:
     connect = sqlite3.connect("singonlight.db")
     dureeIntervalle = connect.execute('SELECT valeur FROM parametres WHERE cle="dureeIntervalle";').fetchone()[0]
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
+    winstreak = connect.execute('SELECT valeur FROM parametres WHERE cle="winstreak";').fetchone()[0]
     connect.close()
 
-    return templates.TemplateResponse('play.html',{'request': request,'dureeIntervalle':dureeIntervalle, "dureePartie":dureePartie})
+    return templates.TemplateResponse('play.html',{'request': request,'dureeIntervalle':dureeIntervalle, "dureePartie":dureePartie, "winstreak":winstreak})
 
 @app.get("/data.html")
 def data(request:Request) -> str:
@@ -148,19 +150,15 @@ async def run_play(request:Request):
     body = await request.json()
     dureeIntervalle = body.get("dureeIntervalle",1)
     dureePartie = body.get("dureePartie",25)
-    #dureeTotale = dureeIntervalle*dureePartie
     save_param_jouer(dureeIntervalle, dureePartie)
     rythme = generation_rythme(int(dureePartie))
 
     global start_event
     start_event = asyncio.Event()
     sound_task = asyncio.create_task(Sound.main(start_event,rythme))
-    #led_task = asyncio.create_task(LED.main(rythme, start_event))
-    
     start_event.set()
 
     res = await sound_task
-    #await led_task
 
     print(res)
     print("fin de partie")
@@ -174,8 +172,26 @@ async def run_play(request:Request):
     print(str(pourcentage) + "%")
     
     if pourcentage >= 50:
-        return "Vous avez gagné avec un score de " + str(pourcentage) + "%"
-    return "Vous avez perdu avec un score de " + str(pourcentage) + "%"
+        w = increment_winstreak()
+        return {"message":"Vous avez gagné avec un score de " + str(pourcentage) + "%", "winstreak": w}
+    w = reset_winstreak()
+    return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "winstreak": w}
+
+def reset_winstreak():
+    connect = sqlite3.connect('singonlight.db')
+    connect.execute('UPDATE parametres set valeur=0 WHERE cle="winstreak";')
+    connect.commit()
+    connect.close()
+    return 0
+
+def increment_winstreak():
+    connect = sqlite3.connect('singonlight.db')
+    current_winstreak = connect.execute('SELECT valeur FROM parametres WHERE cle="winstreak";').fetchone()[0]
+    new_winstreak = current_winstreak + 1
+    connect.execute('UPDATE parametres set valeur=? WHERE cle="winstreak";', (new_winstreak,))
+    connect.commit()
+    connect.close()
+    return new_winstreak
 
 def transformation_signal_moyenne(signal,dureeIntervalle):
     connect = sqlite3.connect("singonlight.db")
@@ -196,18 +212,6 @@ def transformation_signal_moyenne(signal,dureeIntervalle):
         else:
             signal_fin.append(0)
     return signal_fin
-        
-   
-#def transformation_signal(lst_partie):
-#    n = 3
-#    lst_signal = []
-#    for i in range
-#    lst_res = []
-#    for i in range(len(3,lst_partie)):
-#        lst_res.append(lst_partie[i-3:i])
-#        med = np.median(lst_res)
-#        if lst_partie[i] > med :
-#            lst_signal
 
 @app.post("/reset_data")
 async def reset_data(request:Request):
