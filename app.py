@@ -136,6 +136,70 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         active_connections.remove(websocket)
 
+
+@app.post("/run_play_multi")
+async def run_play(request:Request):
+    """ appelé quand le joueur appuie sur le bouton jouer """
+    body = await request.json()
+    dureeIntervalle = body.get("dureeIntervalle",1)
+    dureePartie = body.get("dureePartie",25)
+    save_param_jouer(dureeIntervalle, dureePartie)
+    rythme = generation_rythme(int(dureePartie))
+
+    global start_event
+    start_event = asyncio.Event()
+    sound_task = asyncio.create_task(Sound.main(start_event,rythme))
+    start_event.set()
+
+    res = await sound_task
+
+    print(res)
+    print("fin de partie")
+    print("son (" + str(len(res))+"): " + str(res))
+    print("led (" + str(len(rythme))+"): " + str(rythme))
+    
+    signal = transformation_signal_moyenne(res,dureeIntervalle)
+    print(res, "=>", signal)
+    pourcentage = score.calculerPourcentage(rythme, signal)
+    enregistrer_score(pourcentage)
+    print(str(pourcentage) + "%")
+    pourcentage = pourcentage1
+
+    
+     const delay = ms => new Promise(res => setTimeout(res, ms));
+            async function save_param() {
+                document.getElementById("temps").innerText = "La partie commence dans 3 secondes.";
+                await delay(1000);
+                document.getElementById("temps").innerText = "La partie commence dans 2 secondes.";
+                await delay(1000);
+                document.getElementById("temps").innerText = "La partie commence dans 1 secondes.";
+                await delay(1000);
+                document.getElementById("temps").innerText = "";
+    
+    global start_event
+    start_event = asyncio.Event()
+    sound_task = asyncio.create_task(Sound.main(start_event,rythme))
+    start_event.set()
+
+    res = await sound_task
+
+    print(res)
+    print("fin de partie")
+    print("son (" + str(len(res))+"): " + str(res))
+    print("led (" + str(len(rythme))+"): " + str(rythme))
+    
+    signal = transformation_signal_moyenne(res,dureeIntervalle)
+    print(res, "=>", signal)
+    pourcentage = score.calculerPourcentage(rythme, signal)
+    enregistrer_score(pourcentage)
+    print(str(pourcentage) + "%")
+    
+    if pourcentage >= pourcentage1:
+        w = increment_winstreak()
+        return {"message":"Le joueur 2 a gagné " + str(pourcentage) + "%", "winstreak": w}
+    w = reset_winstreak()
+    return {"message": "Le joueur 1 a gagné " + str(pourcentage1) + "%", "winstreak": w}
+
 @app.post("/run-auto-calibrate")
 async def run_auto_calibrate(request:Request):
     """ appelé quand l'utilisateur appuie sur le bouton de calibration automatique """
