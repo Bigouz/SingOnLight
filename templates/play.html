@@ -67,13 +67,13 @@
 
 
             async function save_param() {
-                document.getELementById("temps").innerText = "La partie commence dans 3 secondes.";
+                document.getElementById("temps").innerText = "La partie commence dans 3 secondes.";
                 await 1;
-                document.getELementById("temps").innerText = "La partie commence dans 2 secondes.";
+                document.getElementById("temps").innerText = "La partie commence dans 2 secondes.";
                 await 1;
-                document.getELementById("temps").innerText = "La partie commence dans 1 secondes.";
+                document.getElementById("temps").innerText = "La partie commence dans 1 secondes.";
                 await 1;
-                document.getELementById("temps").innerText = "";
+                document.getElementById("temps").innerText = "";
                 
                 const dureeIntervalle = parseFloat(document.getElementById('dureeIntervalle').value);
                 const dureePartie = parseInt(document.getElementById('dureePartie').value);
@@ -99,6 +99,7 @@
 <link rel="stylesheet" href="static/css/style.css">
 </body>
 </html>
+
 
 
 
