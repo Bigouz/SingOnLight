@@ -62,6 +62,10 @@ def main(request:Request):
     #user = {'username': 'Cécile'}
     return templates.TemplateResponse("index.html",{"request":request})
 
+@app.get("/Mode.html")
+def mode(request:Request):
+    return templates.TemplateResponse('Mode.html',{})
+
 @app.get("/play.html")
 def play(request:Request) -> str:
     """ récupère les paramètres de la partie depuis la base de données et les envoie à la page play.html """
@@ -143,6 +147,8 @@ def save_param_jouer(dureeIntervalle:int, dureePartie:int):
     connect.execute('UPDATE parametres set valeur=(?) WHERE cle="dureePartie";', (dureePartie,))
     connect.commit()
     connect.close()
+
+
 
 @app.post("/run_play")
 async def run_play(request:Request):
