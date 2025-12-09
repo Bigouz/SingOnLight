@@ -25,13 +25,6 @@
                 <h2>Paramètres de la partie</h2>
                 </br>Choisissez vos paramètres de jeu ci-dessous :
                 <br><br>
-
-          <label for="nom_1"> Nom du J1 : </label>
-                <input type="nom" name="nom_1" id="nom_1" value="entrer votre nom" onchange="change_value(this);temps_total()"><br>
-          
-           <label for="nom_2"> Nom du J2 : </label>
-                <input type="nom" name="nom_2" id="nom_2" value="entrer votre nom" onchange="change_value(this);temps_total()"><br>
-
           
           
                 <label for="dureeIntervalle">Durée d'intervalles (en secondes) : </label>
@@ -42,12 +35,14 @@
              
             
                 <span id="temps_total"> </span><br>
-                <button class="start" onclick="save_param()">Jouer</button>
+                <button class="start" id="J1" onclick="save_param(this)">Joueur 1</button>
+                <button class="start" id="J2" onclick="save_param(this)">Joueur 2</button>
             </div>
             
             
             <br><br>
-            <p style="color: lime;" id="result">{{message}}</p>
+            <p style="color: rgb(0, 145, 255);" id="resultJ1">{{message}}</p>
+            <p style="color: rgb(0, 145, 255);" id="resultJ2">{{message}}</p>
             </p>
             
             <script>
@@ -71,22 +66,39 @@
                 temps_total()
 
 
-            async function save_param() {
+            async function save_param(player) {
                 const dureeIntervalle = parseFloat(document.getElementById('dureeIntervalle').value);
                 const dureePartie = parseInt(document.getElementById('dureePartie').value);
-                const nom_1 = (document.getElementById('nom_1').value);
-                const nom_2 = (document.getElementById('nom_2').value);
-
+                document.getElementById('dureePartie').disabled = true;
+                document.getElementById('dureeIntervalle').disabled = true;
+                document.getElementById("J1").disabled = true;
+                document.getElementById("J2").disabled = true;
                 
                 // Send parameters via POST with JSON body
                 const response = await fetch('/run_play_multi', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie})
+                    body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie, "ryhtme":Grythme})
                 });
                 const data = await response.json();
-                document.getElementById('result').innerText = data;
+                let texte;
+                if (player == document.getElementById("J1")){
+                    texte = "Le Joueur 1 ";
+                } else texte = "Le Joueur 2 "
+
+                if (player == document.getElementById("J1")){
+                    document.getElementById('resultJ1').innerText = texte + data["message"];
+                } else {
+                    document.getElementById('resultJ2').innerText = texte + data["message"];
+                }
+                
+                document.getElementById("J1").disabled = false;
+                document.getElementById("J2").disabled = false;
+                player.disabled = true;
+                Grythme = data["rythme"]
             }
+
+            var Grythme = -1;
         </script>
         </div>
     </div>
