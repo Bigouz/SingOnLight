@@ -79,7 +79,7 @@
 
                 
                 // Send parameters via POST with JSON body
-                const response = await fetch('/run_play', {
+                const response = await fetch('/run_play_multi', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie})
