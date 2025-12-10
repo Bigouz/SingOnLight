@@ -10,6 +10,8 @@ import score as score
 from random import randint
 from ws_manager import active_connections, broadcast
 
+start_event = asyncio.Event()
+
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED.
 import SoundSensor as Sound
 import LED
@@ -17,13 +19,7 @@ import LED
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
 #import test as Sound
 
-start_event = asyncio.Event()
-
-
-@asynccontextmanager # gestion du cycle de vie de l'application (onstartup/shutdown)
-async def lifespan(app : FastAPI):
-    # Code à exécuter au démarrage de l'application
-    # Initialisation de la base de données SQLite
+def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
     connect.execute('CREATE TABLE IF NOT EXISTS parametres (cle TEXT PRIMARY KEY,valeur INTEGER);') # utilisé afin d'obtenir le seuil de calibration
     connect.execute('CREATE TABLE IF NOT EXISTS scores (intervalleScore TEXT PRIMARY KEY, occurence INTEGER);') # utilisé afin d'obtenir les scores des parties jouées
@@ -35,6 +31,7 @@ async def lifespan(app : FastAPI):
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureeIntervalle", 1)) # durée d'une intervalle
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureePartie", 25)) # durée de la partie en intervalles
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("winstreak", 0)) # winstreak initialisé à 0
+        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("rythme", -1)) # rythme custom
 
     stats = connect.execute('SELECT * FROM scores;')
     data_scores = stats.fetchall()
@@ -45,13 +42,20 @@ async def lifespan(app : FastAPI):
     connect.commit()
     connect.close()
     print("Base de données initialisée.")
+
+@asynccontextmanager # gestion du cycle de vie de l'application (onstartup/shutdown)
+async def lifespan(app : FastAPI):
+    print("AAAAAAAAA")
+    # Code à exécuter au démarrage de l'application
+    # Initialisation de la base de données SQLite
+    gen_bdd()
     yield
     # Code à exécuter à l'arrêt de l'application
     if len(active_connections) > 0:
         await broadcast("Le serveur va s'arrêter. Déconnexion...")
         active_connections.clear()
     pass
-
+    
 #print(score.calculer([1,0,1,1,0,0,1],[0,1,1,1,0,0,1])) # Test de la fonction de calcul du score
 
 templates = Jinja2Templates(directory="templates/")
@@ -108,12 +112,6 @@ def calibration(request:Request) -> str:
     seuil = connect.execute('SELECT valeur FROM parametres WHERE cle="seuil";').fetchone()[0]
     connect.close()
     return templates.TemplateResponse('calibration.html',{'request': request, 'seuil':int(seuil)})
-
-@app.get("/creation_rythme.html")
-def creation(request:Request) -> str:
-    connect = sqlite3.connect('singonlight.db')
-    connect.close()
-    return templates.TemplateResponse('creation_rythme.html',{'request': request})
 
 def save_calibration(seuil: int):
     connect = sqlite3.connect('singonlight.db')
