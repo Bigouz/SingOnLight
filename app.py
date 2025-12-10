@@ -13,11 +13,11 @@ from ws_manager import active_connections, broadcast
 start_event = asyncio.Event()
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED.
-import SoundSensor as Sound
-import LED
+#import SoundSensor as Sound
+#import LED
 
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-#import test as Sound
+import test as Sound
 
 def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
@@ -230,46 +230,56 @@ async def run_play(request:Request):
     return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "winstreak": w}
 
 @app.post("/run_creation_rythme") 
+async def run_creation_rythme(request:Request):
     body = await request.json()
-    rythme = body.get("rythme", values)
-    return "rythme sauvegardée."
+    rythme = body.get("rythme", -1)
+    if rythme == -1:
+        return "Aucun rythme reçu."
+    connect = sqlite3.connect('singonlight.db')
 
-@app.post("/run_play")
+    # il faut trasformer le rythme en chaîne de caractères pour le stocker dans la BDD ici
+
+
+    connect.execute('UPDATE parametres set valeur=? WHERE cle="rythme";', (str(rythme),))
+    connect.commit()
+    connect.close()
+    return "rythme sauvegardé."
+
+@app.post("/run_play_rythme")
 async def run_play_rythme(request:Request):
-""" appelé quand le joueur appuie sur le bouton jouer avec ton rythme"""
+    """ appelé quand le joueur appuie sur le bouton jouer avec ton rythme"""
+    connect = sqlite3.connect('singonlight.db')
+    body = await request.json()
+    dureeIntervalle = body.get("dureeIntervalle",1)
+    dureePartie = body.get("dureePartie",25)
+    save_param_jouer(dureeIntervalle, dureePartie)
+    rythme = connect.execute("SELECT value FROM parametres WHERE cle='rythme';").fetchone()[0]
+    if rythme == -1:
+        return("Tu n'as pas crée de rythme")
+    else:
+        global start_event
+        start_event = asyncio.Event()
+        sound_task = asyncio.create_task(Sound.main(start_event,rythme))
+        start_event.set()
 
-connect = sqlite3.connect('singonlight.db')
-body = await request.json()
-dureeIntervalle = body.get("dureeIntervalle",1)
-dureePartie = body.get("dureePartie",25)
-save_param_jouer(dureeIntervalle, dureePartie)
-rythme = connect.execute("SELECT value FROM parametres WHERE cle='rythme';").fetchone()[0]
-if rythme == -1:
-    return("Tu n'as pas crée de rythme")
-else:
-    global start_event
-    start_event = asyncio.Event()
-    sound_task = asyncio.create_task(Sound.main(start_event,rythme))
-    start_event.set()
+        res = await sound_task
 
-    res = await sound_task
+        print(res)
+        print("fin de partie")
+        print("son (" + str(len(res))+"): " + str(res))
+        print("led (" + str(len(rythme))+"): " + str(rythme))
+            
+        signal = transformation_signal_moyenne(res,dureeIntervalle)
+        print(res, "=>", signal)
+        pourcentage = score.calculerPourcentage(rythme, signal)
+        enregistrer_score(pourcentage)
+        print(str(pourcentage) + "%")
 
-    print(res)
-    print("fin de partie")
-    print("son (" + str(len(res))+"): " + str(res))
-    print("led (" + str(len(rythme))+"): " + str(rythme))
-        
-    signal = transformation_signal_moyenne(res,dureeIntervalle)
-    print(res, "=>", signal)
-    pourcentage = score.calculerPourcentage(rythme, signal)
-    enregistrer_score(pourcentage)
-    print(str(pourcentage) + "%")
-
-    if pourcentage >= 50:
-        w = increment_winstreak()
-        return {"message":"Vous avez gagné avec un score de " + str(pourcentage) + "%", "winstreak": w}
-    w = reset_winstreak()
-    return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "winstreak": w}
+        if pourcentage >= 50:
+            w = increment_winstreak()
+            return {"message":"Vous avez gagné avec un score de " + str(pourcentage) + "%", "winstreak": w}
+        w = reset_winstreak()
+        return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "winstreak": w}
 
 def reset_winstreak():
     connect = sqlite3.connect('singonlight.db')

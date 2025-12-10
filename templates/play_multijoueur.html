@@ -45,8 +45,11 @@
             <p style="color: rgb(0, 145, 255);" id="resultJ1"></p>
             <p style="color: rgb(0, 145, 255);" id="resultJ2"></p>
             <br>
-            <p style="color: rgb(0,255,0);" id="result"></p>
+            <p style="color: rgb(0,255,0);" id="result"><br>
+            <button class="playBTN" id="okBTN" onclick="location.reload()" style="visibility: hidden;">OK</button>
             </p>
+            </p>
+            
             
             <script>
                 function change_value(t){
@@ -114,7 +117,7 @@
                     if (pourcentage2 == pourcentage1){
                         document.getElementById("result").innerText = "Egalité."
                         }
-                        
+                    document.getElementById("okBTN").style.visibility = "visible";
                     }
                 
                 player.disabled = true;
