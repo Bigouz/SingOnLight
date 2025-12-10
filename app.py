@@ -1,6 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, Request, WebSocket, BackgroundTasks
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, Request, WebSocket
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import asyncio
@@ -12,12 +11,11 @@ from ws_manager import active_connections, broadcast
 
 start_event = asyncio.Event()
 
-### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED.
-#import SoundSensor as Sound
-#import LED
+### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED (dans SoundSensor).
+import SoundSensor as Sound
 
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-import test as Sound
+#import test as Sound
 
 def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
