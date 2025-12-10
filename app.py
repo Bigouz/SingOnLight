@@ -229,6 +229,11 @@ async def run_play(request:Request):
     w = reset_winstreak()
     return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "winstreak": w}
 
+@app.post("/run_creation_rythme") 
+    body = await request.json()
+    rythme = body.get("rythme", values)
+    return "rythme sauvegardée."
+
 @app.post("/run_play")
 async def run_play_rythme(request:Request):
 """ appelé quand le joueur appuie sur le bouton jouer avec ton rythme"""
