@@ -1,136 +1,143 @@
 <!doctype html>
 <html>
+
 <head>
-<title>Sing On Light - Jouer</title>
+    <title>Sing On Light - Jouer</title>
 </head>
+
 <body>
-<div class = "parent">
-    <div class="div1">
-        <div class = "div1a">
-            <a class="indexBTN" href="/">Menu Principal</a><br>
-            <a class="playBTN" id="currentBTN" href="/Mode.html">Jouer</a><br>
-            <a class="calibrationBTN" href="/calibration.html">Calibration</a><br>
-            <a class="dataBTN" href="/data.html">Données</a><br>
-            <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
-            <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank" class="github">GitHub</a>
+    <div class="parent">
+        <div class="div1">
+            <div class="div1a">
+                <a class="indexBTN" href="/">Menu Principal</a><br>
+                <a class="playBTN" id="currentBTN" href="/Mode.html">Jouer</a><br>
+                <a class="calibrationBTN" href="/calibration.html">Calibration</a><br>
+                <a class="dataBTN" href="/data.html">Données</a><br>
+                <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
+                <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank"
+                    class="github">GitHub</a>
 
-        </div>    
-    </div>
-    <div class="div2">
-        <h1>Sing On Light - Jouer</h1>
-        <div class="text">
-            <p>Lorsque vous appuyez sur "Jouer", la partie commencera immédiatement. 
-            <br>Quand la LED s'allume, faites un bruit continu (chanter, siffler, etc.).
-            <br>
-            <div class="container" style="min-width: 640px;">
-                <h2>Paramètres de la partie</h2>
-                </br>Choisissez vos paramètres de jeu ci-dessous :
-                <br><br>
-          
-          
-                <label for="dureeIntervalle">Durée d'intervalles (en secondes) : </label>
-                <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="2" min="0.1" step="0.1" onchange="change_value(this);temps_total()"><br>
-
-                <label for="dureePartie">Durée de la partie (en intervalles) : </label>
-                <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;temps_total()" ><br><br>
-             
-            
-                <span id="temps_total"> </span><br>
-                <button class="start" id="J1" onclick="save_param(this)">Joueur 1</button>
-                <button class="start" id="J2" onclick="save_param(this)">Joueur 2</button>
             </div>
-            
-            
-            <br><br>
-            <p style="color: rgb(0, 145, 255);" id="resultJ1"></p>
-            <p style="color: rgb(0, 145, 255);" id="resultJ2"></p>
-            <br>
-            <p style="color: rgb(0,255,0);" id="result"><br>
-            <button class="playBTN" id="okBTN" onclick="location.reload()" style="visibility: hidden;">OK</button>
-            </p>
-            </p>
-            
-            
-            <script>
-                function change_value(t){
-                    t.value = t.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
-                    let v = parseFloat(t.value);
-                    if (isNaN(v)) v = 0.1;
-                    if (v < 0.1) v = 0.1;
-                    if (v > 2.0) v = 2.0;
-                    // arrondi au pas de 0.1
-                    v = Math.round(v * 10) / 10;
-                    t.value = v.toFixed(1);
-                }
-            
-            
-                function temps_total(){
-                    let temps = Math.round(document.getElementById("dureePartie").value * document.getElementById("dureeIntervalle").value);
-                    document.getElementById("temps_total").innerHTML = "Temps total de la partie : " + temps + " secondes";
-                    return temps;
-                }
-                temps_total()
+        </div>
+        <div class="div2">
+            <h1>Sing On Light - Jouer</h1>
+            <div class="text">
+                <p>Lorsque vous appuyez sur "Jouer", la partie commencera <strong>immédiatement</strong>.
+                    <br>Quand la LED s'allume, faites un <strong>bruit continu</strong> (chanter, siffler, etc.).
+                    <br>
+                <div class="container" style="min-width: 640px;">
+                    <h2>Paramètres de la partie</h2>
+                    </br>Choisissez vos <strong>paramètres</strong> de jeu ci-dessous :
+                    <br><br>
 
 
-            async function save_param(player) {
-                const dureeIntervalle = parseFloat(document.getElementById('dureeIntervalle').value);
-                const dureePartie = parseInt(document.getElementById('dureePartie').value);
-                document.getElementById('dureePartie').disabled = true;
-                document.getElementById('dureeIntervalle').disabled = true;
-                document.getElementById("J1").disabled = true;
-                document.getElementById("J2").disabled = true;
-                
-                // Send parameters via POST with JSON body
-                const response = await fetch('/run_play_multi', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({"dureeIntervalle":dureeIntervalle, "dureePartie":dureePartie, "rythme":Grythme})
-                });
-                const data = await response.json();
-                let texte;
-                if (player == document.getElementById("J1")){
-                    texte = "Le Joueur 1 ";
-                } else texte = "Le Joueur 2 "
+                    <label for="dureeIntervalle">Durée d'<strong>intervalles</strong> (en secondes) : </label>
+                    <input type="number" name="dureeIntervalle" id="dureeIntervalle" value="{{dureeIntervalle}}" max="2"
+                        min="0.1" step="0.1" onchange="change_value(this);temps_total()"><br>
 
-                if (player == document.getElementById("J1")){
-                    document.getElementById('resultJ1').innerText = texte + data["message"];
-                    pourcentage1 = data["pourcentage"]
-                } else {
-                    document.getElementById('resultJ2').innerText = texte + data["message"];
-                    pourcentage2 = data["pourcentage"]
-                }
-                
-                if (document.getElementById("resultJ1").innerText == ""){
-                    document.getElementById("J1").disabled = false;
+                    <label for="dureePartie">Durée de la <strong>partie</strong> (en intervalles) : </label>
+                    <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5"
+                        onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;temps_total()"><br><br>
+
+
+                    <span id="temps_total"> </span><br>
+                    <button class="start" id="J1" onclick="save_param(this)"><strong>Joueur 1</strong></button>
+                    <button class="start" id="J2" onclick="save_param(this)"><strong>Joueur 2</strong></button>
+                </div>
+
+
+                <br><br>
+                <p style="color: rgb(0, 145, 255);" id="resultJ1"></p>
+                <p style="color: rgb(0, 145, 255);" id="resultJ2"></p>
+                <br>
+                <p style="color: rgb(0,255,0);" id="result"><br>
+                    <button class="playBTN" id="okBTN" onclick="location.reload()"
+                        style="visibility: hidden;">OK</button>
+                </p>
+                </p>
+
+
+                <script>
+                    function change_value(t) {
+                        t.value = t.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+                        let v = parseFloat(t.value);
+                        if (isNaN(v)) v = 0.1;
+                        if (v < 0.1) v = 0.1;
+                        if (v > 2.0) v = 2.0;
+                        // arrondi au pas de 0.1
+                        v = Math.round(v * 10) / 10;
+                        t.value = v.toFixed(1);
                     }
-                if (document.getElementById("resultJ2").innerText == ""){
-                    document.getElementById("J2").disabled = false;
-                    }
-                
-                if (document.getElementById("resultJ1").innerText != "" && document.getElementById("resultJ2").innerText != ""){
-                    if (pourcentage1 > pourcentage2){
-                        document.getElementById("result").innerText = "Le Joueur 1 a gagné.";
-                        }
-                    if (pourcentage2 > pourcentage1){
-                        document.getElementById("result").innerText = "Le Joueur 2 a gagné."
-                        }
-                    if (pourcentage2 == pourcentage1){
-                        document.getElementById("result").innerText = "Egalité."
-                        }
-                    document.getElementById("okBTN").style.visibility = "visible";
-                    }
-                
-                player.disabled = true;
-                Grythme = data["rythme"]
-            }
 
-            var Grythme = -1;
-            var pourcentage1 = -1;
-            var pourcentage2 = -1;
-        </script>
+
+                    function temps_total() {
+                        let temps = Math.round(document.getElementById("dureePartie").value * document.getElementById("dureeIntervalle").value);
+                        document.getElementById("temps_total").innerHTML = "Temps total de la partie : " + temps + " secondes";
+                        return temps;
+                    }
+                    temps_total()
+
+
+                    async function save_param(player) {
+                        const dureeIntervalle = parseFloat(document.getElementById('dureeIntervalle').value);
+                        const dureePartie = parseInt(document.getElementById('dureePartie').value);
+                        document.getElementById('dureePartie').disabled = true;
+                        document.getElementById('dureeIntervalle').disabled = true;
+                        document.getElementById("J1").disabled = true;
+                        document.getElementById("J2").disabled = true;
+
+                        // Send parameters via POST with JSON body
+                        const response = await fetch('/run_play_multi', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ "dureeIntervalle": dureeIntervalle, "dureePartie": dureePartie, "rythme": Grythme })
+                        });
+                        const data = await response.json();
+                        let texte;
+                        if (player == document.getElementById("J1")) {
+                            texte = "Le Joueur 1 ";
+                        } else texte = "Le Joueur 2 "
+
+                        if (player == document.getElementById("J1")) {
+                            document.getElementById('resultJ1').innerText = texte + data["message"];
+                            pourcentage1 = data["pourcentage"]
+                        } else {
+                            document.getElementById('resultJ2').innerText = texte + data["message"];
+                            pourcentage2 = data["pourcentage"]
+                        }
+
+                        if (document.getElementById("resultJ1").innerText == "") {
+                            document.getElementById("J1").disabled = false;
+                        }
+                        if (document.getElementById("resultJ2").innerText == "") {
+                            document.getElementById("J2").disabled = false;
+                        }
+
+                        if (document.getElementById("resultJ1").innerText != "" && document.getElementById("resultJ2").innerText != "") {
+                            if (pourcentage1 > pourcentage2) {
+                                document.getElementById("result").innerText = "Le Joueur 1 a gagné.";
+                            }
+                            if (pourcentage2 > pourcentage1) {
+                                document.getElementById("result").innerText = "Le Joueur 2 a gagné."
+                            }
+                            if (pourcentage2 == pourcentage1) {
+                                document.getElementById("result").innerText = "Egalité."
+                            }
+                            document.getElementById("okBTN").style.visibility = "visible";
+                        }
+
+                        player.disabled = true;
+                        Grythme = data["rythme"]
+                    }
+
+                    var Grythme = -1;
+                    var pourcentage1 = -1;
+                    var pourcentage2 = -1;
+                </script>
+            </div>
         </div>
     </div>
-</div>
-<link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/style.css">
 </body>
+
 </html>
