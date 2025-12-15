@@ -5,45 +5,48 @@
 <script src="https://code.highcharts.com/modules/export-data.js"></script>
 <script src="https://code.highcharts.com/modules/accessibility.js"></script>
 <script src="https://code.highcharts.com/themes/adaptive.js"></script>
-<head>
-<title>Sing On Light - Jouer</title>
-</head>
-<body>
-<div class = "parent">
-    <div class="div1">
-        <div class = "div1a">
-            <a class="indexBTN" href="/">Menu Principal</a><br>
-            <a class="playBTN" href="/Mode.html">Jouer</a><br>
-            <a class="calibrationBTN" href="/calibration.html">Calibration</a><br>
-            <a class="dataBTN" id="currentBTN" href="/data.html">Données</a><br>
-            <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
-            <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank" class="github">GitHub</a>
 
-        </div>    
-    </div>
-    <div class="div2">
-        <h1>Sing On Light - Données</h1>
-        <div class="text">
-            <p>Les données de vos parties sont affichées ici.<br>
+<head>
+    <title>Sing On Light - Jouer</title>
+</head>
+
+<body>
+    <div class="parent">
+        <div class="div1">
+            <div class="div1a">
+                <a class="indexBTN" href="/">Menu Principal</a><br>
+                <a class="playBTN" href="/Mode.html">Jouer</a><br>
+                <a class="calibrationBTN" href="/calibration.html">Calibration</a><br>
+                <a class="dataBTN" id="currentBTN" href="/data.html">Données</a><br>
+                <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
+                <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank"
+                    class="github">GitHub</a>
+
+            </div>
+        </div>
+        <div class="div2">
+            <h1>Sing On Light - Données</h1>
+            <div class="text">
+                <p>Les <strong>données</strong> de vos parties sont affichées ici.<br>
                 <figure class="highcharts-figure">
                     <div id="container"></div>
                     <p class="highcharts-description">
                         Graphique représentant les différents scores obtenus lors des parties jouées.<br>
-                        <button class="refresh" onclick="location.reload()">Rafraîchir les données</button>
-                        <button class="red" onclick="reset_data()">Effacer les données</button><br>
+                        <button class="refresh" onclick="location.reload()"><strong>Rafraîchir</strong> les
+                            données</button>
+                        <button class="red" onclick="reset_data()"><strong>Effacer</strong> les données</button><br>
                     </p>
                 </figure>
-            </p>
+                </p>
+            </div>
         </div>
     </div>
-</div>
-<span id="data" style="visibility: hidden;">{{scores}}</span>
+    <span id="data" style="visibility: hidden;">{{scores}}</span>
 </body>
 
 <link rel="stylesheet" href="static/css/style.css">
 <script src="static/js/highcharts.js"></script>
 <script>
     showChart(document.getElementById("data").innerHTML);</script>
+
 </html>
-
-
