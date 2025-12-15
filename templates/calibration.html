@@ -1,93 +1,99 @@
 <!doctype html>
 <html>
+
 <head>
-<title>Sing On Light - Calibration</title>
+    <title>On Light - Calibration</title>
 </head>
+
 <body>
-<div class = "parent">
-    <div class="div1">
-        <div class = "div1a">
-            <a class="indexBTN" href="/">Menu Principal</a><br>
-            <a class="playBTN" href="/Mode.html">Jouer</a><br>
-            <a class="calibrationBTN" id="currentBTN" href="/calibration.html">Calibration</a><br>
-            <a class="dataBTN" href="/data.html">Données</a><br>
-            <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
-            <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank" class="github">GitHub</a>
+    <div class="parent">
+        <div class="div1">
+            <div class="div1a">
+                <a class="indexBTN" href="/">Menu Principal</a><br>
+                <a class="playBTN" href="/Mode.html">Jouer</a><br>
+                <a class="calibrationBTN" id="currentBTN" href="/calibration.html">Calibration</a><br>
+                <a class="dataBTN" href="/data.html">Données</a><br>
+                <a class="creationBTN" href="/creation_rythme.html">Créer son propre rythme!</a><br>
+                <a href="https://github.com/Bigouz/Projet-L1-Informatique-1er-semestre" target="_blank"
+                    class="github">GitHub</a>
 
-        </div>    
-    </div>
-    <div class="div2">
-        <h1>Sing On Light - Calibration</h1>
-        <div class="text">
-            <p>La calibration permet de régler la sensibilité des capteurs sonores.
-            </br>Il est conseillé de faire cette étape à chaque changement d'environnement sonore.
-            <br><br>
-            <div id="calibrations">
-                <div class="container2" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;">
-                    <h3>Calibration manuelle</h3>
-                    <label for="seuil">Seuil: </label>
-                    <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="750" step="1" value="{{seuil}}" onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>750)this.value=750;"><br>
-                    <button class="calibrateBTN" id="cal_man_btn" onclick="calibrate()">Calibrer</button>
-                    <br><br>
-                </div>
-                <div class="container2" style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;margin-left: 20px;">
-                    <h3>Calibration automatique</h3>
-                    <br>
-                    <button class="calibrateBTN" onclick="auto_calibrate()">Calibration automatique</button>
-                    <br><br>
-                </div>
-                
             </div>
-            <div id="log" style="text-align: center;"></div>
-            <p style="color:lime;" id="result">{{message}}</p>
-            </p>
+        </div>
+        <div class="div2">
+            <h1>Sing On Light - Calibration</h1>
+            <div class="text">
+                <p>La calibration permet de régler <strong>sensibilité</strong> des capteurs sonores.
+                    </br>Il est conseillé de faire cette étape <strong>à chaque changement d'environnement
+                        sonore</strong>.
+                    <br><br>
+                <div id="calibrations">
+                    <div class="container2"
+                        style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;">
+                        <h3>Calibration manuelle</h3>
+                        <label for="seuil">Seuil: </label>
+                        <input type="number" name="seuil" id="seuil" placeholder="Seuil" min="30" max="750" step="1"
+                            value="{{seuil}}"
+                            onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<30)this.value=30; if(this.value>750)this.value=750;"><br>
+                        <button class="calibrateBTN" id="cal_man_btn" onclick="calibrate()">Calibrer</button>
+                        <br><br>
+                    </div>
+                    <div class="container2"
+                        style="display:inline-block;vertical-align: top; min-height: 10rem; text-align: center;margin-left: 20px;">
+                        <h3>Calibration automatique</h3>
+                        <br>
+                        <button class="calibrateBTN" onclick="auto_calibrate()">Calibration automatique</button>
+                        <br><br>
+                    </div>
+
+                </div>
+                <div id="log" style="text-align: center;"></div>
+                <p style="color:lime;" id="result">{{message}}</p>
+                </p>
 
 
-            <script>
-                const ws = new WebSocket("ws://localhost:8000/ws");
+                <script>
+                    const ws = new WebSocket("ws://localhost:8000/ws");
 
-                ws.onmessage = function(event) {
-                    const log = document.getElementById('log');
-                    log.innerHTML += event.data + '<br>';
-                    log.scrollTop = log.scrollHeight;
-                };
+                    ws.onmessage = function (event) {
+                        const log = document.getElementById('log');
+                        log.innerHTML += event.data + '<br>';
+                        log.scrollTop = log.scrollHeight;
+                    };
 
-                async function calibrate() {
-                    const seuil = parseInt(document.getElementById('seuil').value);
-                    
-                    const response = await fetch('/run-calibrate', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({"seuil":seuil})
-                    });
+                    async function calibrate() {
+                        const seuil = parseInt(document.getElementById('seuil').value);
 
-                    const data = await response.json();
-                    document.getElementById('result').innerText = data;
-                }
+                        const response = await fetch('/run-calibrate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ "seuil": seuil })
+                        });
 
-                async function auto_calibrate() {
-                    document.getElementById('log').innerHTML = "";
-                    document.getElementById('result').innerText = "";
-                    document.getElementById('cal_man_btn').disabled = true;
-                    const response = await fetch('/run-auto-calibrate', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'}
-                    });
+                        const data = await response.json();
+                        document.getElementById('result').innerText = data;
+                    }
 
-                    const data = await response.json();
-                    document.getElementById('result').innerText = data;
-                    document.getElementById('cal_man_btn').disabled = false;
-                }
-        </script>
+                    async function auto_calibrate() {
+                        document.getElementById('log').innerHTML = "";
+                        document.getElementById('result').innerText = "";
+                        document.getElementById('cal_man_btn').disabled = true;
+                        const response = await fetch('/run-auto-calibrate', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
 
+                        const data = await response.json();
+                        document.getElementById('result').innerText = data;
+                        document.getElementById('cal_man_btn').disabled = false;
+                    }
+                </script>
+
+            </div>
         </div>
     </div>
-</div>
 
 </body>
 
 <link rel="stylesheet" href="static/css/style.css">
+
 </html>
-
-
-
