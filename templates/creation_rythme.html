@@ -22,25 +22,24 @@
         <div class="div2">
             <h1>Sing On Light - Créer son rythme</h1>
             <div class="text">
-                <p>Après avoir créer votre propre rythme pour vous entrainer,
-                    <br>appuyez sur "Jouer" et la partie commencera immédiatement.
-                    <br><br>Quand la LED s'allume, faites un bruit continu (chanter, siffler, etc.).
-                    <br>
+                <p>Après avoir créé <strong>votre propre rythme</strong> pour vous entraîner,
+                    <br>appuyez sur "Jouer" et la partie commencera <strong>immédiatement</strong>.
+                <p>Quand la LED s'allume, faites un <strong>bruit continu</strong> (chanter, siffler, etc.).</p>
                 <div class="container" style="min-width: 640px;">
                     <h2>Paramètres de la partie</h2>
-                    </br>Choisissez vos paramètres pour le rythme ci-dessous :
-                    <br><br>
+                    <p>Choisissez vos <strong>paramètres</strong> pour le rythme ci-dessous :</p>
 
-                    <label for="dureePartie">Durée de la partie (en intervalles) : </label>
+
+                    <label for="dureePartie"><strong>Durée</strong> de la partie (en intervalles) : </label>
                     <input type="number" name="dureePartie" id="dureePartie" value="{{dureePartie}}" max="120" min="5"
                         onchange="this.value=this.value.replace(/[^0-9]/g,''); if(this.value<5)this.value=5; if(this.value>120)this.value=120;creer_cases(this.value)"><br><br>
                     <fieldset>
                         <legend>Rythme</legend>
                     </fieldset>
 
-                    <br><br>
-                    <span id="temps_total"> </span><br>
-                    <button id="create" class="create" onclick=save_param(this);>Créer</button>
+
+                    <span id="temps_total"> </span>
+                    <p><button id="create" class="create" onclick=save_param(this);>Créer</button></p>
                 </div>
                 <span id="rythme" style="opacity: 0;">{{rythme}}</span>
 
@@ -66,10 +65,10 @@
                             fieldset.appendChild(label);
                         }
                     }
-                    
+
                     let rythme = document.getElementById("rythme").innerText;
-                    document.getElementById("dureePartie").value = Math.max(rythme.length,5);
-                    
+                    document.getElementById("dureePartie").value = Math.max(rythme.length, 5);
+
                     creer_cases(document.getElementById("dureePartie").value);
 
                     console.log(rythme);
@@ -98,7 +97,7 @@
 
                         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
                         let values = Array.from(checkboxes).map(checkbox => checkbox.id);
-                        
+
                         for (let i = 0; i < checkboxes.length; i++) {
                             if (checkboxes[i].checked) {
                                 values[i] = 1;
