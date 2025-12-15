@@ -12,15 +12,16 @@ from ws_manager import active_connections, broadcast
 start_event = asyncio.Event()
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED (dans SoundSensor).
-import SoundSensor as Sound
+#import SoundSensor as Sound
 
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-#import test as Sound
+import test as Sound
 
 def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
     connect.execute('CREATE TABLE IF NOT EXISTS parametres (cle TEXT PRIMARY KEY,valeur INTEGER);') # utilisé afin d'obtenir le seuil de calibration
     connect.execute('CREATE TABLE IF NOT EXISTS scores (intervalleScore TEXT PRIMARY KEY, occurence INTEGER);') # utilisé afin d'obtenir les scores des parties jouées
+    connect.execute('CREATE TABLE IF NOT EXISTS rythme (id INTEGER PRIMARY KEY AUTOINCREMENT, rythme CHAR(120));') # itlisé afin d'obtenir les rythmes créés par les utilisateurs
     everything = connect.execute('SELECT * FROM parametres;')
     data = everything.fetchall()
     print(len(data))
@@ -29,7 +30,7 @@ def gen_bdd():
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureeIntervalle", 1)) # durée d'une intervalle
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("dureePartie", 25)) # durée de la partie en intervalles
         connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("winstreak", 0)) # winstreak initialisé à 0
-        connect.execute('INSERT INTO parametres (cle,valeur) VALUES (?,?);', ("rythme", -1)) # rythme custom
+        connect.execute('INSERT INTO rythme (rythme) VALUES (?);', ("2")) # rythme custom
 
     stats = connect.execute('SELECT * FROM scores;')
     data_scores = stats.fetchall()
@@ -40,7 +41,7 @@ def gen_bdd():
     connect.commit()
     connect.close()
     print("Base de données initialisée.")
-
+gen_bdd()
 @asynccontextmanager # gestion du cycle de vie de l'application (onstartup/shutdown)
 async def lifespan(app : FastAPI):
     # Code à exécuter au démarrage de l'application
@@ -84,7 +85,7 @@ def play(request:Request) -> str:
     dureeIntervalle = connect.execute('SELECT valeur FROM parametres WHERE cle="dureeIntervalle";').fetchone()[0]
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
     winstreak = connect.execute('SELECT valeur FROM parametres WHERE cle="winstreak";').fetchone()[0]
-    rythme = connect.execute('SELECT valeur FROM parametres WHERE cle="rythme";').fetchone()[0]
+    rythme = connect.execute('SELECT rythme FROM rythme WHERE id=1;').fetchone()[0]
     connect.close()
     longueur_rythme = len(str(rythme)) if rythme != -1 else 0
     return templates.TemplateResponse('play.html',{'request': request,'dureeIntervalle':dureeIntervalle, "dureePartie":dureePartie, "winstreak":winstreak, "rythme":longueur_rythme})
@@ -205,7 +206,7 @@ async def run_play(request:Request):
         rythme = generation_rythme(int(dureePartie))
     else:
         connect = sqlite3.connect('singonlight.db')
-        rythme = connect.execute("SELECT value FROM parametres WHERE cle='rythme';").fetchone()[0]
+        rythme = connect.execute("SELECT rythme FROM rythme WHERE id=1;").fetchone()[0]
         connect.close()
     print(rythme)
     save_param_jouer(dureeIntervalle, dureePartie)
@@ -239,11 +240,11 @@ async def run_play(request:Request):
 def creation_rythme(request:Request) -> str:
     """ récupère les paramètres de la partie depuis la base de données et les envoie à la page creation_rythme.html """
     connect = sqlite3.connect("singonlight.db")
-    rythme = connect.execute('SELECT valeur FROM parametres WHERE cle="rythme";').fetchone()[0]
+    rythme = connect.execute('SELECT rythme FROM rythme WHERE id=1;').fetchone()[0]
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
 
     connect.close()
-    if rythme == -1:
+    if rythme == "2":
         return templates.TemplateResponse('creation_rythme.html',{'request': request, "dureePartie":dureePartie, "rythme":[]})
     
     rythme = str(rythme)
@@ -253,15 +254,13 @@ def creation_rythme(request:Request) -> str:
 @app.post("/run_creation_rythme") 
 async def run_creation_rythme(request:Request):
     body = await request.json()
-    rythme = body.get("rythme", -1)
-    if rythme == -1:
+    rythme = body.get("rythme", "2")
+    if rythme == "2":
         return "Aucun rythme reçu."
     connect = sqlite3.connect('singonlight.db')
 
-    # il faut transformer le rythme en chaîne de caractères pour le stocker dans la BDD ici
 
-
-    connect.execute('UPDATE parametres set valeur=? WHERE cle="rythme";', (str(rythme),))
+    connect.execute('UPDATE rythme set rythme=? WHERE id=1;', (str(rythme),))
     connect.commit()
     connect.close()
     return "rythme sauvegardé."
@@ -274,8 +273,8 @@ async def run_play_rythme(request:Request):
     dureeIntervalle = body.get("dureeIntervalle",1)
     dureePartie = body.get("dureePartie",25)
     save_param_jouer(dureeIntervalle, dureePartie)
-    rythme = connect.execute("SELECT value FROM parametres WHERE cle='rythme';").fetchone()[0]
-    if rythme == -1:
+    rythme = connect.execute("SELECT rythme FROM rythme WHERE id=1;").fetchone()[0]
+    if rythme == "2":
         return("Tu n'as pas crée de rythme")
     else:
         global start_event
