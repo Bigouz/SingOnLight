@@ -12,10 +12,10 @@ from ws_manager import active_connections, broadcast
 start_event = asyncio.Event()
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED (dans SoundSensor).
-#import SoundSensor as Sound
+import SoundSensor as Sound
 
 ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-import test as Sound
+#import test as Sound
 
 def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
@@ -67,6 +67,10 @@ def main(request:Request):
 @app.get("/Mode.html")
 def mode(request:Request):
     return templates.TemplateResponse('Mode.html',{"request":request})
+
+@app.get("/histoire.html")
+def histoire(request:Request):
+    return templates.TemplateResponse('histoire.html',{"request":request})
 
 @app.get("/play_multijoueur.html")
 def play_mult(request:Request) -> str:
