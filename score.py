@@ -19,6 +19,9 @@ def calculer(reference:list[int], essai:list[int], score:int=0)->int:
                     essai[0] = 1
                 return calculer(reference[1:], essai, score)
     if reference[0] == 0:
+        if essai[0] == 0:
+            score += 10
+            return calculer(reference[1:], essai[1:], score)
         if essai[0] == 1:
             score -= 10
             return calculer(reference[1:], essai[1:], score)
@@ -30,4 +33,5 @@ def calculerPourcentage(reference:list[int],essai:list[int])->float:
     return max(0,calculer(reference, essai) / calculer(reference,reference)) * 100
 
 #print(calculerPourcentage([0,0,0,0,0,1,0],
+
 #                          [0,0,0,0,0,0,1]))
