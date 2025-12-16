@@ -52,7 +52,7 @@ def gen_bdd():
         
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (11, "010",0.5)) # rythme histoire 11
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (12, "11101",0.5)) # rythme histoire 12
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (13, "011110001011011111",0.5) # rythme histoire 13
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (13, "011110001011011111",0.5)) # rythme histoire 13
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (14, "101010101111011101001",0.5)) # rythme histoire 14
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (15, "10110011001101",0.4)) # rythme histoire 15
         
