@@ -43,17 +43,33 @@ def gen_bdd():
         """
     
     if len(connect.execute("SELECT * FROM histoire;").fetchall()) == 0:
+        """
+        Mode facile : Comprendre les bases du jeu
+        """
+        
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (1, "11010",1.0)) # rythme histoire 1
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (2, "11101",0.6)) # rythme histoire 2
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (3, "0110010101",0.8)) # rythme histoire 3
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (4, "11101011",0.8)) # rythme histoire 4
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (5, "101001011",0.7)) # rythme histoire 5
+
+        """
+        Mode Intermediaire : Acceleration
+        """
         
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (6, "011110001011011111",0.6)) # rythme histoire 13
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (7, "101010101111011101001",0.5)) # rythme histoire 14
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (8, "10110011001101",0.4)) # rythme histoire 15
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (9, "10110011001101",0.4)) # rythme histoire 15
-        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (10, "10110011001101",0.4)) # rythme histoire 15
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (6, "011110001011011111",0.6)) # rythme histoire 6
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (7, "101010101111011101001",0.5)) # rythme histoire 7
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (8, "10111101010101001010100011111101",0.4)) # rythme histoire 8
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (9, "11010110110101101110101101101100100011111",0.3)) # rythme histoire 9
+        connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (10, "1011011011110010010011000000101111111110110101",0.3)) # rythme histoire 10
+
+        """
+        Mode Difficile : Rythme non fixe
+        """
+
+        """
+        Mode Impossible : Bonne chance
+        """
         
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (16, "1111100001111111000000000011110000111111111111111111111111111111000111",0.1)) # rythme histoire 16 [0.5b,0.4s,0.7b,1s,0.4b,0.4s,3b,0.3s,0.3b]
         connect.execute('INSERT INTO histoire (cle,rythme,intervalle) VALUES (?,?,?);', (17, "1111111111110000011111001111111001111111001111111000000000000000000001111100001111111111111111111111111111111111111111",0.1)) # rythme histoire 17 [1.2b,0.5s,0.5b,0.2s,0.7b,0.2s,0.7b,0.2s,0.7b,2s,0.5b,0.4s,4b]
@@ -66,7 +82,7 @@ def gen_bdd():
         """
         
         connect.execute('INSERT INTO special (cle,rythme,intervalle) VALUES (?,?,?);', (1, "111111",10)) # rythme special 1
-        connect.execute('INSERT INTO special (cle,rythme,intervalle) VALUES (?,?,?);', (1, "111111",10)) # rythme special 1
+        connect.execute('INSERT INTO special (cle,rythme,intervalle) VALUES (?,?,?);', (2, "111111",10)) # rythme special 1
     
         
     stats = connect.execute('SELECT * FROM scores;')
