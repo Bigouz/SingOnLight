@@ -12,10 +12,18 @@ from ws_manager import active_connections, broadcast
 start_event = asyncio.Event()
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED (dans SoundSensor).
-import SoundSensor as Sound
+Sound = None
+try:
+    import SoundSensor as Sound
 
-### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-#import test as Sound
+    ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
+    #import test as Sound
+except Exception as e:
+    Sound = None
+    print("Impossible d'importer SoundSensor, utilisation du module de test.")
+    print(e)
+
+
 
 def gen_bdd():
     connect = sqlite3.connect('singonlight.db')
