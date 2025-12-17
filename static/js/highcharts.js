@@ -81,12 +81,18 @@ function showChart(data) {
 };
 
 
-function apparition(button) {
-    button.disabled = true;
-    let gif = document.getElementById("gifDragon");
+function apparition(id_gif) {
+    let gif = document.getElementById(id_gif);
     gif.classList.remove("hidden");
     gif.classList.add("visible");
+
+    // Recacher le GIF après 3 secondes
+    setTimeout(function() {
+        gif.classList.remove("visible");
+        gif.classList.add("hidden");
+	}, 3000);
 }
+
 
 
 
