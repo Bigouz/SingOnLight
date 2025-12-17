@@ -168,7 +168,7 @@ def play(request:Request) -> str:
 @app.get("/play_histoire.html")
 def play_histoire(request:Request) -> str:
     connect = sqlite3.connect("singonlight.db")
-    rythme = connect.execute('SELECT rythme FROM histoire WHERE id=1;').fetchone()[0]
+    rythme = connect.execute('SELECT rythme FROM histoire WHERE cle=1;').fetchone()[0]
     connect.close()
     return templates.TemplateResponse('play_histoire.html',{'request': request, 'rythme' : rythme})
 
