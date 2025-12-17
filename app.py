@@ -165,6 +165,13 @@ def play(request:Request) -> str:
     longueur_rythme = len(str(rythme)) if rythme != -1 else 0
     return templates.TemplateResponse('play.html',{'request': request,'dureeIntervalle':dureeIntervalle, "dureePartie":dureePartie, "winstreak":winstreak, "rythme":longueur_rythme})
 
+@app.get("/play_histoire.html")
+def play_histoire(request:Request) -> str:
+    connect = sqlite3.connect("singonlight.db")
+    rythme = connect.execute('SELECT rythme FROM histoire WHERE id=1;').fetchone()[0]
+    connect.close()
+    return templates.TemplateResponse('play_histoire.html',{'request': request, 'rythme' : rythme})
+
 @app.get("/data.html")
 def data(request:Request) -> str:
     """ récupère les scores depuis la base de données et les envoie à la page data.html """
