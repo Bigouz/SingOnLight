@@ -8,6 +8,19 @@
 
 <body>
     <link rel="stylesheet" href="static/css/style.css">
+
+    <button hidden id = "buttonHistoire" class="start" onclick="apparition()">Jouer </button>
+
+              <img id="gifDragon" src="static/images/test.gif"  class="hidden">
+
+	      <script>
+		document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("buttonHistoire").click();
+		});
+	</script>
+
+	      <p>Vous êtes au niveau <span id="niveau">{{niveau}}</span></p>
+    
     <script>
         function jouer_avec_rythme() {
             if (document.getElementById("rythme").checked) {
