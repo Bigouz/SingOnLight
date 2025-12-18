@@ -11,20 +11,13 @@ from ws_manager import active_connections, broadcast
 
 
 ### pour tester du code sans le raspberry PI, on peut commenter l'import de SoundSensor et LED (dans SoundSensor).
-Sound = None
-try:
-    import SoundSensor as Sound
+import SoundSensor as Sound
 
-    ### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
-    #import test as Sound
-except Exception as e:
-    Sound = None
-    print("Impossible d'importer SoundSensor, utilisation du module de test.")
-    print(e)
-
-
+### pour tester les messages Websockets sans raspberry PI, décommenter la ligne suivante.
+#import test as Sound
 
 def gen_bdd():
+    """fonction qui génère les tables de la base de données si les tables n'existent pas."""
     connect = sqlite3.connect('singonlight.db')
     connect.execute('CREATE TABLE IF NOT EXISTS parametres (cle TEXT PRIMARY KEY,valeur INTEGER);') # utilisé afin d'obtenir le seuil de calibration
     connect.execute('CREATE TABLE IF NOT EXISTS histoire (cle INTEGER PRIMARY KEY,rythme TEXT,intervalle DOUBLE);') # utilisé afin d'obtenir les rythmes du mode histoire
@@ -122,6 +115,7 @@ def gen_bdd():
 gen_bdd()
 @asynccontextmanager # gestion du cycle de vie de l'application (onstartup/shutdown)
 async def lifespan(app : FastAPI):
+    """ code executé au lancement du serveur local"""
     # Code à exécuter au démarrage de l'application
     # Initialisation de la base de données SQLite
     gen_bdd()
@@ -137,21 +131,25 @@ async def lifespan(app : FastAPI):
 templates = Jinja2Templates(directory="templates/")
 app = FastAPI(lifespan=lifespan)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
 @app.get('/')
 def main(request:Request):
+    """ envoi de la page principale (index.html) """
     return templates.TemplateResponse("index.html",{"request":request})
 
 @app.get("/Mode.html")
 def mode(request:Request):
+    """ envoi de la page mode de jeu"""
     return templates.TemplateResponse('Mode.html',{"request":request})
 
 @app.get("/histoire.html")
 def histoire(request:Request):
+    """ envoi de la page du mode histoire"""
     return templates.TemplateResponse('histoire.html',{"request":request})
 
 @app.get("/play_multijoueur.html")
 def play_mult(request:Request) -> str:
-    """ récupère les paramètres de la partie depuis la base de données et les envoie à la page play.html """
+    """ récupère les paramètres de la partie depuis la base de données et les envoie à la page play_multijoueur.html """
     connect = sqlite3.connect("singonlight.db")
     dureeIntervalle = connect.execute('SELECT valeur FROM parametres WHERE cle="dureeIntervalle";').fetchone()[0]
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
@@ -161,7 +159,7 @@ def play_mult(request:Request) -> str:
 
 @app.get("/play.html")
 def play(request:Request) -> str:
-    """ récupère les paramètres de la partie depuis la base de données et les envoie à la page play.html """
+    """ récupère les paramètres de la partie depuis la base de données et les envoie à la page play.html en tant que valeur par defaut"""
     connect = sqlite3.connect("singonlight.db")
     dureeIntervalle = connect.execute('SELECT valeur FROM parametres WHERE cle="dureeIntervalle";').fetchone()[0]
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
@@ -173,6 +171,7 @@ def play(request:Request) -> str:
 
 @app.get("/play_histoire.html")
 def play_histoire(request:Request) -> str:
+    """ page play_histoire """
     connect = sqlite3.connect("singonlight.db")
     rythme = connect.execute('SELECT rythme FROM histoire WHERE cle=1;').fetchone()[0]
     connect.close()
@@ -180,7 +179,7 @@ def play_histoire(request:Request) -> str:
 
 @app.get("/data.html")
 def data(request:Request) -> str:
-    """ récupère les scores depuis la base de données et les envoie à la page data.html """
+    """ récupère les scores depuis la base de données et les envoie à la page data.html pour les afficher dans le graphique"""
     connect = sqlite3.connect('singonlight.db')
     scores = connect.execute('SELECT * FROM scores;').fetchall()
     connect.close()
@@ -194,13 +193,14 @@ def data(request:Request) -> str:
 
 @app.get("/calibration.html")
 def calibration(request:Request) -> str:
-    """ récupère le seuil de calibration depuis la base de données et l'envoie à la page calibration.html """
+    """ récupère le seuil de calibration depuis la base de données et l'envoie à la page calibration.html pour l'affichage de la valeur par defaut pour la calibration manuelle"""
     connect = sqlite3.connect('singonlight.db')
     seuil = connect.execute('SELECT valeur FROM parametres WHERE cle="seuil";').fetchone()[0]
     connect.close()
     return templates.TemplateResponse('calibration.html',{'request': request, 'seuil':int(seuil)})
 
 def save_calibration(seuil: int):
+    """ sauvegarde le seuil dans la base de données"""
     connect = sqlite3.connect('singonlight.db')
     connect.execute('UPDATE parametres set valeur=(?) WHERE cle="seuil";', (seuil,))
     connect.commit()
@@ -209,6 +209,7 @@ def save_calibration(seuil: int):
 
 @app.post("/run-calibrate") # récupération du seuil de calibration depuis la page calibration.html afin de le sauvegarder dans la base de donnée
 async def run_calibrate(request:Request):
+    """ récupère le seuil depuis le site et le sauvegarde dans la bdd"""
     body = await request.json()
     seuil = body.get("seuil", 50)
     result = save_calibration(int(seuil))
@@ -216,7 +217,7 @@ async def run_calibrate(request:Request):
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    """ gère les connexions WebSocket (1) """
+    """ gère les connexions WebSockets pour l'affichage du texte pour la calibration automatique"""
     await websocket.accept()
     active_connections.append(websocket)
     try:
@@ -229,7 +230,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.post("/run_play_multi")
 async def run_play_multi(request:Request):
-    """ appelé quand le joueur appuie sur le bouton jouer """
+    """ appelé quand le joueur appuie sur le bouton jouer dans le mode multijoueur"""
     body = await request.json()
     dureeIntervalle = body.get("dureeIntervalle",1)
     dureePartie = body.get("dureePartie",25)
@@ -239,12 +240,7 @@ async def run_play_multi(request:Request):
     if rythme == -1:
         rythme = generation_rythme(int(dureePartie))
 
-    global start_event
-    start_event = asyncio.Event()
-    sound_task = asyncio.create_task(Sound.main(start_event,rythme))
-    start_event.set()
-
-    res = await sound_task
+    res = await Sound.main(None,rythme)
 
     print(res)
     print("fin de partie")
@@ -257,6 +253,7 @@ async def run_play_multi(request:Request):
     enregistrer_score(pourcentage)
     print(str(pourcentage) + "%")
     
+    # le "Joueur 1" / "Joueur 2" est affiché en javascript
     return {"message":"a fini avec un score de " + str(pourcentage) + "%", "rythme": rythme, "pourcentage": pourcentage}
 
 @app.post("/run-auto-calibrate")
@@ -275,6 +272,7 @@ async def run_auto_calibrate(request:Request):
     return "La calibration automatique est terminée."
 
 def save_param_jouer(dureeIntervalle:int, dureePartie:int):
+    """ sauvegarde des paramètres dans la BDD pour que l'utilisateur ne doive pas le rentrer a chaque fois"""
     connect = sqlite3.connect('singonlight.db')
     connect.execute('UPDATE parametres set valeur=(?) WHERE cle="dureeIntervalle";', (dureeIntervalle,))
     connect.execute('UPDATE parametres set valeur=(?) WHERE cle="dureePartie";', (dureePartie,))
@@ -285,7 +283,7 @@ def save_param_jouer(dureeIntervalle:int, dureePartie:int):
 
 @app.post("/run_play")
 async def run_play(request:Request):
-    """ appelé quand le joueur appuie sur le bouton jouer """
+    """ appelé quand le joueur appuie sur le bouton jouer en mode solo, prend le rythme personnalisé si le bouton est coché, sinon il est généré"""
     body = await request.json()
     dureeIntervalle = body.get("dureeIntervalle",1)
     dureePartie = body.get("dureePartie",25)
@@ -331,7 +329,7 @@ def creation_rythme(request:Request) -> str:
     dureePartie = connect.execute('SELECT valeur FROM parametres WHERE cle="dureePartie";').fetchone()[0]
 
     connect.close()
-    if rythme == "2":
+    if rythme == "2": # "2" car "-1" ne marche pas
         return templates.TemplateResponse('creation_rythme.html',{'request': request, "dureePartie":dureePartie, "rythme":[]})
     
     rythme = str(rythme)
@@ -340,6 +338,7 @@ def creation_rythme(request:Request) -> str:
 
 @app.post("/run_creation_rythme") 
 async def run_creation_rythme(request:Request):
+    """ appelé quand le bouton créer est appuyé. sauvegarde le rythme dans la BDD"""
     body = await request.json()
     rythme = body.get("rythme", "2")
     if rythme == "2":
@@ -356,7 +355,7 @@ async def run_creation_rythme(request:Request):
 niveau_histoire = 1
 @app.post("/run_play_histoire")
 async def run_play_histoire():
-    """ appelé quand le joueur appuie sur le bouton jouer avec ton rythme"""
+    """ appelé quand le joueur lance une partie en mode histoire """
     global niveau_histoire
     connect = sqlite3.connect('singonlight.db')
     dureeIntervalle = connect.execute("SELECT intervalle FROM histoire WHERE cle=" + str(niveau_histoire) + ";").fetchone()[0]
@@ -395,12 +394,14 @@ async def run_play_histoire():
     return {"message": "Vous avez perdu avec un score de " + str(pourcentage) + "%", "niveau": niveau_histoire, "etat":"perdu"}
 
 def reset_winstreak():
+    """ réinitialise le winsteak (nombre de victoires d'affilé)"""
     connect = sqlite3.connect('singonlight.db')
     connect.execute('UPDATE parametres set valeur=0 WHERE cle="winstreak";')
     connect.commit()
     connect.close()
     return 0
 def get_winstreak():
+    """ récupère le winstreak depuis la BDD"""
     connect = sqlite3.connect('singonlight.db')
     current_winstreak = connect.execute('SELECT valeur FROM parametres WHERE cle="winstreak";').fetchone()[0]
     connect.close()
@@ -408,6 +409,7 @@ def get_winstreak():
     
     
 def increment_winstreak():
+    """ incrémente le winstreak de 1 """
     connect = sqlite3.connect('singonlight.db')
     current_winstreak = connect.execute('SELECT valeur FROM parametres WHERE cle="winstreak";').fetchone()[0]
     new_winstreak = current_winstreak + 1
@@ -417,22 +419,23 @@ def increment_winstreak():
     return new_winstreak
 
 def transformation_signal_moyenne(signal,dureeIntervalle):
+    """ transforme le signal du capteur sonore selon la moyenne """
     connect = sqlite3.connect("singonlight.db")
     seuil = connect.execute("SELECT valeur FROM parametres WHERE cle='seuil';").fetchone()[0]
     print("seuil :",seuil)
     connect.close()
     
-    signal_bin = [1 if signal[i] >= seuil else 0 for i in range(len(signal))]
+    signal_bin = [1 if signal[i] >= seuil else 0 for i in range(len(signal))] # si la valeur du capteur > seuil, alors cela append 1, 0 sinon
     taux = 0.1
     signal_compr = []
-    n = round(dureeIntervalle/taux)
+    n = round(dureeIntervalle/taux) # temps d'une intervalle en secondes 
     print(n)
 
     for i in range(0,len(signal_bin),n):
-        signal_compr.append(sum(signal_bin[i:i+n])/n)
+        signal_compr.append(sum(signal_bin[i:i+n])/n) # calcule la moyenne des n éléments (0 ou 1), puis des n éléments suivants
     signal_fin = []
     for s in signal_compr:
-        if s >= 0.5:
+        if s >= 0.5: # si il y a un bruit pendant la majorité de l'intervalle, alors il y a un bruit pendant l'intervalle
             signal_fin.append(1)
         else:
             signal_fin.append(0)
@@ -440,6 +443,8 @@ def transformation_signal_moyenne(signal,dureeIntervalle):
 
 @app.post("/reset_data")
 async def reset_data(request:Request):
+    """ appelé quand l'utilisateur appuye sur le bouton effacer les données sur la page data.html
+        réinitialise les données de parties dans la BDD. """
     connect = sqlite3.connect('singonlight.db')
     for i in range(0,101,10):
         connect.execute('UPDATE scores set occurence=0 WHERE intervalleScore=?;', (str(i),))
@@ -463,14 +468,14 @@ def enregistrer_score(score_obtenu):
     """
     intervalle = int((score_obtenu // 10) * 10)  # Déterminer l'intervalle de score (0-10, 11-20, ..., 91-100)
     connect = sqlite3.connect('singonlight.db')
-    # Récupérer l'occurence actuelle pour le score_obtenu
+    # Récuperation de l'occurence actuelle pour le score_obtenu
     occurence_actuelle = connect.execute('SELECT occurence FROM scores WHERE intervalleScore=?;', (str(intervalle),)).fetchone()[0]
-    # Incrémenter l'occurence
+    # Incrémentation de l'occurence
     nouvelle_occurence = occurence_actuelle + 1
-    # Mettre à jour la base de données
+    # Mise à jour la base de données
     connect.execute('UPDATE scores SET occurence=? WHERE intervalleScore=?;', (nouvelle_occurence, str(intervalle)))
     connect.commit()
     connect.close()
 
 if __name__ == "__main__":
-    uvicorn.run(app) # lancement du serveur HTTP + WSGI avec les options de debug
+    uvicorn.run(app) # lancement du serveur HTTP + WSGI
