@@ -22,34 +22,37 @@ class GroveSoundSensor(object):
 Grove = GroveSoundSensor
 
 async def main(start_event, rythme, dureeIntervalleHist=None):
+  """ fonction qui lance la partie, allume la LED, capte le son, renvoie la liste des volumes sonores. """
   pin = 0
 
   sensor = GroveSoundSensor(pin)
   taux_interpolation = 0.1
   
-  if dureeIntervalleHist == None:
+  if dureeIntervalleHist == None: # si la partie n'est pas en mode histoire
     connect = sqlite3.connect("singonlight.db")
     data = connect.execute("SELECT valeur FROM parametres WHERE cle = 'dureeIntervalle';")
     data = data.fetchone()[0]
     connect.close()
-  else:
+  else: # si la partie est en mode histoire, alors la durée de l'intervalle est celle du paramètre
     data = dureeIntervalleHist  
   data2= len(rythme)
   print(data2)
   print('Detecting sound...')
   L=[]
-  for j in range(int(data2)):
-    LED.change_state(rythme,j)
+  # boucle de jeu
+  for j in range(int(data2)): 
+    LED.change_state(rythme,j) # change l'etat de la LED en fonction du rythme a l'indice j
     for i in range(round(data*(1/taux_interpolation))):
         print('Sound value: {0}'.format(sensor.sound))
         L.append(sensor.sound)
         await asyncio.sleep(taux_interpolation)
-  LED.change_state([0],0) 
+  LED.change_state([0],0) # eteint la led 
   return L
 
 
 async def calibrage(n):
     """
+    appelé quand l'utilisateur appuie sur le bouton calibration automatique
     n = durée en secondes
     Renvoie le seuil bas du son ambiant
     """
@@ -58,6 +61,7 @@ async def calibrage(n):
     sensor = GroveSoundSensor(pin)
     taux_interpolation = 0.1
 
+    # broadcast fait apparaître le message sur le site via un websocket
     await broadcast("Veuillez ne pas faire de bruit durant le calibrage du son ambiant")
     print("Veuillez ne pas faire de bruit durant le calibrage du son ambiant")
     await asyncio.sleep(5)
