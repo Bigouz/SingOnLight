@@ -44,4 +44,4 @@ L’utilisateur joue en mode solo. Le Raspberry Pi déclenche la LED à un rythm
 
 Scénario 2: 
 
-Les utilisateurs jouent en mode multijoueur (à deux joueurs). Lors du tour du premier utilisateur, le Raspberry Pi déclenche la LDD à un rythme aléatoire. Puis lit les données des deux capteurs sonores, et les filtres afin de comparer le signal reçu et celui attendu, selon la précision de la comparaison un score s'affiche à la fin de la session du premier utilisateur. Puis le Raspberry Pi refait de même pour le deuxième utilisateur, et affiche à la fin les scores des deux utilisateurs.
+Les utilisateurs jouent en mode multijoueur (à deux joueurs). Lors du tour du premier utilisateur, le Raspberry Pi déclenche la LED à un rythme aléatoire. Puis lit les données des deux capteurs sonores, et les filtres afin de comparer le signal reçu et celui attendu, selon la précision de la comparaison un score s'affiche à la fin de la session du premier utilisateur. Puis le Raspberry Pi refait de même pour le deuxième utilisateur, et affiche à la fin les scores des deux utilisateurs.
