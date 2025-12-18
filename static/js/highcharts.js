@@ -1,19 +1,19 @@
 async function reset_data() {
 
-                // Send parameters via POST with JSON body
+                // envoie une requête au serveur pour supprimer les données de score de la BDD
                 const response = await fetch('/reset_data', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({})
                 });
-
+                
                 const data = await response.json();
-                location.reload();
+                location.reload(); // recharge la page pour appliquer les modifications
             }
  
 
 function showChart(data) {
-
+    // affiche le graphique avec les données de la BDD en paramètre
     const str = data;
     const fixed = str.replace(/'/g, '"');
     const data2 = JSON.parse(fixed);
@@ -81,6 +81,8 @@ function showChart(data) {
 };
 
 async function apparition(button) {
+    // affiche les GIFs dans le mode histoire
+    // et système d'état de jeu. 
     let gif = document.getElementById("gifDragon");
     gif.classList.remove("hidden");
     gif.classList.add("visible");
@@ -96,20 +98,20 @@ async function apparition(button) {
         const data = await response.json();
 	var niveau = data["niveau"];
 	var etat=data["etat"];
-	if (etat == "gagné"){
-	console.log(niveau);
-	document.getElementById("niveau").innerText = niveau;
-	document.getElementById("buttonHistoire").click();
+	if (etat == "gagné"){ // si l'utilisateur a gagné le niveau
+    	console.log(niveau);
+    	document.getElementById("niveau").innerText = niveau; // change le texte du niveau
+    	document.getElementById("buttonHistoire").click(); // lance le prochain niveau
 	}
-	if(etat == "perdu"){
+	if(etat == "perdu"){ // si l'utilisateur a perdu le niveau
 	    let png = document.getElementById("loose")
 	    png.classList.remove("hidden");
 	    png.classList.add("visible");
 	}
-	if(etat == "fini"){
+	if(etat == "fini"){ // si l'utilisateur a gagné tous les niveaux
 	    let png = document.getElementById("victory")
 	    png.classList.remove("hidden");
 	    png.classList.add("visible");
 	}
-    }, 5000);
+    }, 5000); // le gif est montré pendant 5 secondes
 }
