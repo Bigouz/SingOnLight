@@ -53,6 +53,7 @@
                 <script>
 
                     function creer_cases(n) {
+                        // création des n cases pour le rythme personnalisé (n = nombre d'intervalles)
                         const fieldset = document.querySelector("fieldset");
                         fieldset.innerHTML = '<legend>Rythme</legend>';
                         for (let i = 1; i <= n; i++) {
@@ -67,12 +68,13 @@
                         }
                     }
 
-                    let rythme = document.getElementById("rythme").innerText;
-                    document.getElementById("dureePartie").value = Math.max(rythme.length, 5);
+                    let rythme = document.getElementById("rythme").innerText; // récupération du rythme
+                    document.getElementById("dureePartie").value = Math.max(rythme.length, 5); // minimum 5 intervalles
 
-                    creer_cases(document.getElementById("dureePartie").value);
+                    creer_cases(document.getElementById("dureePartie").value); // création des cases
 
                     console.log(rythme);
+                    // au chargement de la page, change l'état des cases selon le rythme de la requête 
                     for (let i = 0; i < rythme.length; i++) {
                         if (rythme.charAt(i) === '1') {
                             document.getElementById("intervalle" + (i + 1)).checked = true;
@@ -82,18 +84,8 @@
                     }
 
 
-                    function change_value(t) {
-                        t.value = t.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
-                        let v = parseFloat(t.value);
-                        if (isNaN(v)) v = 0.1;
-                        if (v < 0.1) v = 0.1;
-                        if (v > 2.0) v = 2.0;
-                        // arrondi au pas de 0.1
-                        v = Math.round(v * 10) / 10;
-                        t.value = v.toFixed(1);
-                    }
-
                     async function save_param() {
+                        // sauvegarde le rythme dans la BDD par requête vers le serveur
                         document.getElementById("create").innerText = "Le rythme a été créé.";
 
                         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
