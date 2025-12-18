@@ -79,6 +79,7 @@ function showChart(data) {
     });
 
 };
+
 async function apparition(button) {
     let gif = document.getElementById("gifDragon");
     gif.classList.remove("hidden");
@@ -100,22 +101,15 @@ async function apparition(button) {
 	document.getElementById("niveau").innerText = niveau;
 	document.getElementById("buttonHistoire").click();
 	}
-		else { if(etat == "perdu"){
-    }, 3000);
+	else { if(etat == "perdu"){
+	    let png = document.getElementById("loose")
+	    png.classList.remove("hidden");
+	    png.classList.add("visible");
+	}
+	else { if(etat == "fini"){
+	    let png = document.getElementById("victory")
+	    png.classList.remove("hidden");
+	    png.classList.add("visible");
+	}
+    }, 5000);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
