@@ -79,7 +79,6 @@ function showChart(data) {
     });
 
 };
-
 async function apparition(button) {
     let gif = document.getElementById("gifDragon");
     gif.classList.remove("hidden");
@@ -99,6 +98,10 @@ async function apparition(button) {
 	
     }, 3000);
 }
+
+
+
+
 
 
 
