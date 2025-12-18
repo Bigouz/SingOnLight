@@ -101,12 +101,12 @@ async function apparition(button) {
 	document.getElementById("niveau").innerText = niveau;
 	document.getElementById("buttonHistoire").click();
 	}
-	else { if(etat == "perdu"){
+	if(etat == "perdu"){
 	    let png = document.getElementById("loose")
 	    png.classList.remove("hidden");
 	    png.classList.add("visible");
 	}
-	else { if(etat == "fini"){
+	if(etat == "fini"){
 	    let png = document.getElementById("victory")
 	    png.classList.remove("hidden");
 	    png.classList.add("visible");
