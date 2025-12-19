@@ -84,6 +84,9 @@ async function apparition(button) {
     // affiche les GIFs dans le mode histoire
     // et système d'état de jeu. 
     let gif = document.getElementById("gifDragon");
+    let src = gif.src;
+    gif.src = "";
+    gif.src = src; // redémarre le gif
     gif.classList.remove("hidden");
     gif.classList.add("visible");
 
@@ -95,10 +98,11 @@ async function apparition(button) {
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({})
                         });
-        const data = await response.json();
+    const data = await response.json();
 	var niveau = data["niveau"];
 	var etat=data["etat"];
 	if (etat == "gagné"){ // si l'utilisateur a gagné le niveau
+
     	console.log(niveau);
     	document.getElementById("niveau").innerText = niveau; // change le texte du niveau
     	document.getElementById("buttonHistoire").click(); // lance le prochain niveau
@@ -113,5 +117,6 @@ async function apparition(button) {
 	    png.classList.remove("hidden");
 	    png.classList.add("visible");
 	}
-    }, 5000); // le gif est montré pendant 5 secondes
+    }, 2650); // le gif est montré pendant 2.65 secondes
 }
+
